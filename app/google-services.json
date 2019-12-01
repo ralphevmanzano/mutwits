@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "142670232395",
+    "firebase_url": "https://mutweets.firebaseio.com",
+    "project_id": "mutweets",
+    "storage_bucket": "mutweets.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142670232395:android:53c1487dbae7aae8d9c6ce",
+        "android_client_info": {
+          "package_name": "com.ralphevmanzano.mutwits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "142670232395-ala9qhsmnb5rdcmvjrbvqtbjaj9oabks.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO9acWvvJ4Hg6nLYmfCzXJH3AvDPS7w9k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "142670232395-ala9qhsmnb5rdcmvjrbvqtbjaj9oabks.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
