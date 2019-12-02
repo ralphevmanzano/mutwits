@@ -9,8 +9,10 @@ import com.google.firebase.auth.OAuthProvider
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.AuthFragmentBinding
 import java.io.UnsupportedEncodingException
+import java.net.URLEncoder
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
+import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.experimental.and
@@ -53,47 +55,72 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
       firebaseAuth.startActivityForSignInWithProvider(it, provider.build())
         .addOnSuccessListener { authResult ->
 
-          Log.d("Main", "Auth user: ${authResult.additionalUserInfo?.profile}")
-          Log.d("Main", "Auth user: ${(authResult.credential as OAuthCredential).accessToken}")
-          Log.d("Main", "Auth user: ${(authResult.credential as OAuthCredential).idToken}")
-          Log.d("Main", "Auth user: ${(authResult.credential as OAuthCredential).secret}")
-          Log.d(
-            "Main",
-            "Secret key: ${hmacSha1(
-              (authResult.credential as OAuthCredential).accessToken,
-              (authResult.credential as OAuthCredential).secret!!
-            )}"
+          var signatureBaseString: StringBuilder = StringBuilder("POST&https%3A%2F%2Fapi.twitter.com%2F1.1%2Fstatuses%2Fupdate.json&")
+          var oauth_signature: String
+          val parameterString: StringBuilder = StringBuilder()
+
+          val oauth_consumer_key = "tsezcSYZilDxgmgNCKguTdpMS"
+          val oauth_nonce = UUID.randomUUID().toString()
+          val oauth_signature_method = "HMAC-SHA1"
+          val oauth_timestamp = System.currentTimeMillis()/1000L
+          val oauth_token = (authResult.credential as OAuthCredential).accessToken
+          val oauth_version = "1.0"
+          val consumer_sercret = "qJgHZK4Y1alzW9T1rp398TZIYhvHwpdqVVSBbvfgqEf9bZ1vLc"
+          val oauth_secret = (authResult.credential as OAuthCredential).secret
+          val secret = "$consumer_sercret$oauth_secret"
+
+          val parameterMap = mutableMapOf(
+            "include_entities" to true,
+            "oauth_consumer_key" to "tsezcSYZilDxgmgNCKguTdpMS",
+            "oauth_nonce" to UUID.randomUUID().toString(),
+            "oauth_signature_method" to "HMAC-SHA1",
+            "oauth_timestamp" to System.currentTimeMillis()/1000L,
+            "oauth_token" to oauth_token,
+            "oauth_version" to oauth_version
           )
+
+          parameterMap["status"] = "Hello from Twitter API"
+
+          for ((k, v) in parameterMap) {
+            val encodedKey = percentEncode(k)
+            val encodedValue = percentEncode(v.toString())
+
+            parameterString.append(encodedKey)
+            parameterString.append("=")
+            parameterString.append(encodedValue)
+
+            if (k != "status") {
+              parameterString.append("&")
+            }
+          }
+
+          signatureBaseString.append(percentEncode(parameterString.toString()))
+
+          Log.d("Main", "Parameter String: $parameterString")
+          Log.d("Main", "Signature Base String: $signatureBaseString")
+          Log.d("Main", "Signature Secret Key: $secret")
+          Log.d("Main", "OAuth signature ${hmacSha1(signatureBaseString.toString(), secret)}")
         }.addOnFailureListener { e ->
           Log.e("Main", e.message!!)
         }
     }
   }
 
+  private fun percentEncode(input: String) : String {
+    return URLEncoder.encode(input, "UTF-8").replace("%2B", "%20")
+  }
+
+
   @Throws(
     UnsupportedEncodingException::class,
     NoSuchAlgorithmException::class,
     InvalidKeyException::class
   )
-  private fun hmacSha1(value: String, key: String): String? {
-    val type = "HmacSHA1"
-    val secret = SecretKeySpec(key.toByteArray(), type)
-    val mac: Mac = Mac.getInstance(type)
-    mac.init(secret)
-    val bytes: ByteArray = mac.doFinal(value.toByteArray())
-    return bytesToHex(bytes)
-  }
+  private fun hmacSha1(data: String, key: String): String? {
+    val keySpec = SecretKeySpec(key.toByteArray(), "HmacSHA1")
+    val mac = Mac.getInstance("HmacSHA1")
+    mac.init(keySpec)
 
-  private val hexArray = "0123456789abcdef".toCharArray()
-
-  private fun bytesToHex(bytes: ByteArray): String? {
-    val hexChars = CharArray(bytes.size * 2)
-    var v: Int
-    for (j in bytes.indices) {
-      v = (bytes[j] and 0xFF.toByte()).toInt()
-      hexChars[j * 2] = hexArray[v ushr 4]
-      hexChars[j * 2 + 1] = hexArray[v and 0x0F]
-    }
-    return String(hexChars)
+    return mac.doFinal(data.toByteArray()).joinToString("")
   }
 }
