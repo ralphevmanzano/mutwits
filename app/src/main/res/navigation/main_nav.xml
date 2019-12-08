@@ -8,5 +8,13 @@
   <fragment
     android:id="@+id/authFragment"
     android:name="com.ralphevmanzano.mutwits.ui.auth.AuthFragment"
-    android:label="AuthFragment" />
+    android:label="AuthFragment" >
+    <action
+      android:id="@+id/act_auth_to_home"
+      app:destination="@id/homeFragment" />
+  </fragment>
+  <fragment
+    android:id="@+id/homeFragment"
+    android:name="com.ralphevmanzano.mutwits.ui.home.HomeFragment"
+    android:label="HomeFragment" />
 </navigation>

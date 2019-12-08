@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.todo_app.util.EventObserver
 import com.ralphevmanzano.mutwits.BR
 import com.ralphevmanzano.mutwits.util.NavEventArgs
 import dagger.android.support.DaggerFragment
@@ -47,10 +48,16 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
   override fun onActivityCreated(savedInstanceState: Bundle?) {
     super.onActivityCreated(savedInstanceState)
     observeNavigationEvents()
+    observeEvents()
   }
 
+  protected open fun observeEvents() {}
 
-  protected open fun observeNavigationEvents(){}
+  private fun observeNavigationEvents(){
+    viewModel.navigationEvent.observe(viewLifecycleOwner, EventObserver {
+      navigateTo(it)
+    })
+  }
 
   protected fun navigateTo(navEventArgs: NavEventArgs) {
     findNavController().navigate(navEventArgs.actionId, navEventArgs.bundle)

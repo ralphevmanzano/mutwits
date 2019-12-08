@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Mutwits</string>
   <string name="sign_in_with_twitter">Sign in with Twitter</string>
+  <string name="user_profile_image">User profile image</string>
 </resources>
