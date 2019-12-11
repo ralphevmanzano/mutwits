@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.MutedUserItemBinding
-import com.ralphevmanzano.mutwits.ui.BaseAdapter
+import com.ralphevmanzano.mutwits.ui.common.BaseAdapter
 
 class HomeAdapter : BaseAdapter<User, MutedUserItemBinding>(UserDiffCallBack()) {
 

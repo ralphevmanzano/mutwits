@@ -6,8 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kotlin_starter_app.ui.BaseViewModel
+import com.example.todo_app.util.Event
+import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.data.repo.MutwitsRepo
+import com.ralphevmanzano.mutwits.util.NavEventArgs
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +20,7 @@ class HomeViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : 
   val mutedUsers: LiveData<List<User>> = _mutedUsers
 
   init {
-    getMutedUsers()
+//    getMutedUsers()
   }
 
   private fun getMutedUsers() = viewModelScope.launch {
@@ -36,8 +39,10 @@ class HomeViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : 
     } catch (e: Exception) {
       Log.e("Error", "Http error: ${e.localizedMessage}")
     }
+  }
 
-
+  fun goToSearch() {
+    _navigationEvent.value = Event(NavEventArgs(R.id.act_home_to_search))
   }
 
 }

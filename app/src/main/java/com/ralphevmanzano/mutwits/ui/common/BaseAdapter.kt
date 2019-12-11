@@ -1,4 +1,4 @@
-package com.ralphevmanzano.mutwits.ui
+package com.ralphevmanzano.mutwits.ui.common
 
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding

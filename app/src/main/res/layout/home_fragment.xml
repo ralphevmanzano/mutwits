@@ -9,18 +9,35 @@
       type="com.ralphevmanzano.mutwits.ui.home.HomeViewModel" />
   </data>
 
-  <LinearLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/rv"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      app:setUsers="@{viewModel.mutedUsers}"
-      app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:setUsers="@{viewModel.mutedUsers}" />
 
-  </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/floatingActionButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:layout_marginBottom="16dp"
+      android:clickable="true"
+      android:onClick="@{() -> viewModel.goToSearch()}"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:srcCompat="@drawable/ic_add"
+      android:focusable="true" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

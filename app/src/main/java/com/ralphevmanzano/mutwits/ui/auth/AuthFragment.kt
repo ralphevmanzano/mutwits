@@ -1,36 +1,36 @@
 package com.ralphevmanzano.mutwits.ui.auth
 
+import android.os.Bundle
 import android.util.Log
+import android.view.View
+import androidx.navigation.fragment.findNavController
 import com.example.kotlin_starter_app.ui.BaseFragment
 import com.example.todo_app.util.EventObserver
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.AuthFragmentBinding
 import com.ralphevmanzano.mutwits.util.NavEventArgs
-import com.ralphevmanzano.mutwits.util.Prefs
-import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
-import java.util.*
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
-import javax.inject.Inject
-import kotlin.experimental.and
 
 
 class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
 
   private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-  override fun getViewModel(): Class<AuthViewModel> {
-    return AuthViewModel::class.java
+  override val layoutRes: Int
+    get() = R.layout.auth_fragment
+
+  override val viewModelClass: Class<AuthViewModel>
+    get() = AuthViewModel::class.java
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    mainActivity.setupToolbar(false)
   }
 
-  override fun getLayoutRes(): Int {
-    return R.layout.auth_fragment
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    mainActivity.setupToolbar(false)
   }
 
   override fun observeEvents() {

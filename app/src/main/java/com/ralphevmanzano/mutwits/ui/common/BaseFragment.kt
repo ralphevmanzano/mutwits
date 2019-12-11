@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.todo_app.util.EventObserver
 import com.ralphevmanzano.mutwits.BR
+import com.ralphevmanzano.mutwits.ui.MainActivity
 import com.ralphevmanzano.mutwits.util.NavEventArgs
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -21,17 +22,21 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
 
-  protected abstract fun getViewModel(): Class<VM>
+  @get:LayoutRes
+  protected abstract val layoutRes: Int
 
-  @LayoutRes
-  protected abstract fun getLayoutRes(): Int
+  protected abstract val viewModelClass: Class<VM>
 
   protected lateinit var viewModel: VM
   protected lateinit var binding: DB
 
+  val mainActivity: MainActivity by lazy (mode = LazyThreadSafetyMode.NONE) {
+    activity as MainActivity
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    viewModel = ViewModelProvider(this, viewModelFactory).get(getViewModel())
+    viewModel = ViewModelProvider(this, viewModelFactory).get(viewModelClass)
   }
 
   override fun onCreateView(
@@ -39,7 +44,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    binding = DataBindingUtil.inflate(inflater, getLayoutRes(), container, false)
+    binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
     binding.lifecycleOwner = viewLifecycleOwner
     binding.setVariable(BR.viewModel, viewModel)
     return binding.root

@@ -1,4 +1,4 @@
-package com.ralphevmanzano.mutwits.ui
+package com.ralphevmanzano.mutwits.ui.common
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
