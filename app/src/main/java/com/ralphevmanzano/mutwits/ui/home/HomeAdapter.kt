@@ -5,18 +5,9 @@ import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.MutedUserItemBinding
 import com.ralphevmanzano.mutwits.ui.common.BaseAdapter
+import com.ralphevmanzano.mutwits.util.UserDiffCallBack
 
 class HomeAdapter : BaseAdapter<User, MutedUserItemBinding>(UserDiffCallBack()) {
-
-  class UserDiffCallBack : DiffUtil.ItemCallback<User>() {
-    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
-      return oldItem.id_str == newItem.id_str
-    }
-
-    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
-      return oldItem == newItem
-    }
-  }
 
   override fun bind(binding: MutedUserItemBinding, position: Int) {
     binding.user = getItem(position)

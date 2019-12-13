@@ -3,18 +3,19 @@
   <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
     <!-- Customize your theme here. -->
+    <item name="colorOnPrimary">@android:color/white</item>
     <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    <item name="colorAccent">@color/colorAccent</item>
-    <item name="android:background">@color/colorPrimaryDark</item>
+    <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+    <item name="colorSecondary">@color/colorPrimary</item>
+    <item name="colorSecondaryVariant">@color/colorPrimaryDark</item>
+    <item name="android:colorBackground">@color/colorPrimaryDark</item>
+    <item name="colorOnBackground">@android:color/white</item>
+    <item name="android:fontFamily">@font/lato</item>
+    <item name="android:statusBarColor">@color/colorPrimaryDark</item>
   </style>
 
-  <style name="Button.MutwitsButton" parent="Widget.MaterialComponents.Button">
-    <item name="android:textColor">@android:color/white</item>
+  <style name="AppTextAppearance.Button" parent="TextAppearance.MaterialComponents.Button">
     <item name="android:textAllCaps">false</item>
-    <item name="android:textSize">18sp</item>
-    <item name="android:backgroundTint">@color/colorPrimary</item>
-    <item name="android:background">@drawable/rounded_borders</item>
   </style>
 
 </resources>

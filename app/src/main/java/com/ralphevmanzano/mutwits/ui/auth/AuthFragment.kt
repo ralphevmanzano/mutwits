@@ -3,7 +3,6 @@ package com.ralphevmanzano.mutwits.ui.auth
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import com.example.kotlin_starter_app.ui.BaseFragment
 import com.example.todo_app.util.EventObserver
 import com.google.firebase.auth.FirebaseAuth
@@ -23,18 +22,10 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
   override val viewModelClass: Class<AuthViewModel>
     get() = AuthViewModel::class.java
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    mainActivity.setupToolbar(false)
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    mainActivity.setupToolbar(false)
-  }
 
   override fun observeEvents() {
     viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver {
+//      navigateTo(NavEventArgs(R.id.act_auth_to_home))
       checkPendingResult()
     })
   }
@@ -64,5 +55,9 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
           Log.e("Main", e.message!!)
         }
     }
+  }
+
+  override fun setupToolbar() {
+    mainActivity.setupToolbar(show = false)
   }
 }
