@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.todo_app.util.EventObserver
 import com.ralphevmanzano.mutwits.BR
 import com.ralphevmanzano.mutwits.ui.MainActivity
-import com.ralphevmanzano.mutwits.ui.MainViewModel
 import com.ralphevmanzano.mutwits.util.NavEventArgs
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -33,10 +32,6 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
 
   val mainActivity: MainActivity by lazy (mode = LazyThreadSafetyMode.NONE) {
     activity as MainActivity
-  }
-
-  val mainViewModel: MainViewModel by lazy (mode = LazyThreadSafetyMode.NONE) {
-    (activity as MainActivity).viewModel
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

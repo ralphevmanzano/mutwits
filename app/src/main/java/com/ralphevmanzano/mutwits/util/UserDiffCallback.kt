@@ -11,4 +11,15 @@ class UserDiffCallBack : DiffUtil.ItemCallback<User>() {
   override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
     return oldItem == newItem
   }
+
+  override fun getChangePayload(oldItem: User, newItem: User): Any? {
+    val list = mutableListOf<Boolean>()
+
+    val isSelectedEqual = oldItem.isSelected == newItem.isSelected
+    if (isSelectedEqual.not()) {
+      list.add(newItem.isSelected)
+    }
+
+    return list
+  }
 }

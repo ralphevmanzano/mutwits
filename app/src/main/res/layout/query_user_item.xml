@@ -30,7 +30,7 @@
       app:layout_constraintHorizontal_bias="0.5"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:setImage="@{user.profileImage}" />
+      app:setImageCircle="@{user.profileImage}" />
 
     <TextView
       android:id="@+id/textView"
@@ -65,14 +65,15 @@
       style="@style/Widget.MaterialComponents.Button.OutlinedButton"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@string/add"
+      android:text="@{user.selected ? @string/remove : @string/add}"
       android:textAllCaps="false"
+      android:textColor="@{user.selected ? @color/red : @color/colorPrimary}"
       android:textStyle="bold"
       app:cornerRadius="18dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:strokeColor="@color/colorPrimary"
+      app:strokeColor="@{user.selected ? @color/red : @color/colorPrimary}"
       app:strokeWidth="2dp" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>

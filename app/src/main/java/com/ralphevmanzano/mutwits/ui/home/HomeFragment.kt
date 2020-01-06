@@ -17,9 +17,7 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
   override fun setupToolbar() {
     mainActivity.setupToolbar(
       title = getString(R.string.app_name),
-      show = true,
-      showBackButton = false,
-      isSearch = false
+      showBackButton = false
     )
   }
 
@@ -31,5 +29,4 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
     val adapter = HomeAdapter()
     binding.rv.adapter = adapter
   }
-
 }

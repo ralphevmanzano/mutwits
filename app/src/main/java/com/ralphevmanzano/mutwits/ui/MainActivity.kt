@@ -1,41 +1,42 @@
 package com.ralphevmanzano.mutwits.ui
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-  lateinit var viewModel: MainViewModel
+  lateinit var binding: ActivityMainBinding
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-    viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-    binding.lifecycleOwner = this
-    binding.viewModel = viewModel
+    binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
     initToolbar()
+    initAuth()
+  }
+
+  private fun initAuth() {
+    val user = FirebaseAuth.getInstance().currentUser
+    if (user != null) {
+      findNavController(R.id.nav_host_fragment).navigate(R.id.act_auth_to_home)
+    }
   }
 
   private fun initToolbar() {
-    setSupportActionBar(toolbar)
+    setSupportActionBar(binding.toolbar)
   }
 
   fun setupToolbar(
     title: String = "",
-    show: Boolean,
-    showBackButton: Boolean = false,
-    isSearch: Boolean = false
+    show: Boolean = true,
+    showBackButton: Boolean = false
   ) {
     supportActionBar?.apply {
       if (show) {
@@ -45,8 +46,6 @@ class MainActivity : AppCompatActivity() {
         } else {
           setDisplayShowTitleEnabled(false)
         }
-
-        tilSearch.visibility = if (isSearch) View.VISIBLE else View.GONE
 
         setHomeAsUpIndicator(R.drawable.ic_arrow)
         setHomeButtonEnabled(showBackButton)

@@ -7,19 +7,19 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.ui.home.HomeAdapter
-import com.ralphevmanzano.mutwits.ui.search.SearchAdapter
+import com.ralphevmanzano.mutwits.ui.search.adapter.SearchAdapter
 
-@BindingAdapter("setImage")
+@BindingAdapter("setImageCircle")
 fun loadImage(iv: ImageView, imgUrl: String) {
   Glide.with(iv.context).load(imgUrl).apply(RequestOptions().circleCrop()).into(iv)
 }
 
 @BindingAdapter("setMutedUsers")
 fun setMutedUsers(rv: RecyclerView, users: List<User>) {
-  (rv.adapter as HomeAdapter).submitList(users)
+  (rv.adapter as HomeAdapter).submitList(users.toList())
 }
 
 @BindingAdapter("setQueryUsers")
 fun setQueryUsers(rv: RecyclerView, users: List<User>) {
-  (rv.adapter as SearchAdapter).submitList(users)
+  (rv.adapter as SearchAdapter).submitList(users.toList())
 }

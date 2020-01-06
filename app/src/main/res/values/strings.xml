@@ -7,4 +7,6 @@
   <string name="create_a_list_using_the_following">Create a list using of people to mute/unmute by importing muted users on Twitter or by creating it manually</string>
   <string name="create">Create</string>
   <string name="import_str">Import</string>
+  <string name="selected_user">selected user</string>
+  <string name="remove">Remove</string>
 </resources>

@@ -1,34 +1,42 @@
 {
   "project_info": {
-    "project_number": "142670232395",
-    "firebase_url": "https://mutweets.firebaseio.com",
-    "project_id": "mutweets",
-    "storage_bucket": "mutweets.appspot.com"
+    "project_number": "1007848387547",
+    "firebase_url": "https://mutwits.firebaseio.com",
+    "project_id": "mutwits",
+    "storage_bucket": "mutwits.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:142670232395:android:53c1487dbae7aae8d9c6ce",
+        "mobilesdk_app_id": "1:1007848387547:android:6107409acd1ff2506fedfe",
         "android_client_info": {
           "package_name": "com.ralphevmanzano.mutwits"
         }
       },
       "oauth_client": [
         {
-          "client_id": "142670232395-ala9qhsmnb5rdcmvjrbvqtbjaj9oabks.apps.googleusercontent.com",
+          "client_id": "1007848387547-1fdmgrr0ti0nctljobk9e6j1stgc2ue9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ralphevmanzano.mutwits",
+            "certificate_hash": "7742d3a098db5e0e362b3650b635641bc20c6099"
+          }
+        },
+        {
+          "client_id": "1007848387547-bfkjr106641sj81048m68krajfrcsgli.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAO9acWvvJ4Hg6nLYmfCzXJH3AvDPS7w9k"
+          "current_key": "AIzaSyCXt6f-FsV8o9n6oVMz8wgZBmebpAkV0TQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "142670232395-ala9qhsmnb5rdcmvjrbvqtbjaj9oabks.apps.googleusercontent.com",
+              "client_id": "1007848387547-bfkjr106641sj81048m68krajfrcsgli.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

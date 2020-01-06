@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <variable
+      name="user"
+      type="com.ralphevmanzano.mutwits.data.models.User" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+      android:id="@+id/imgUser"
+      setImageCircle="@{user.profileImage}"
+      android:layout_width="72dp"
+      android:layout_height="0dp"
+      android:contentDescription="@string/selected_user"
+      app:layout_constraintDimensionRatio="1"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:srcCompat="@tools:sample/avatars[0]" />
+
+    <TextView
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@{user.userName}"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/imgUser"
+      tools:text="\@wrecketRalph" />
+
+    <ImageButton
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="42dp"
+      android:layout_marginTop="42dp"
+      android:background="@drawable/rounded_borders"
+      android:backgroundTint="@color/colorPrimary"
+      android:padding="2dp"
+      android:src="@drawable/ic_close"
+      app:layout_constraintBottom_toBottomOf="@+id/imgUser"
+      app:layout_constraintEnd_toEndOf="@+id/imgUser"
+      app:layout_constraintStart_toStartOf="@+id/imgUser"
+      app:layout_constraintTop_toTopOf="@+id/imgUser"
+      tools:ignore="RtlHardcoded" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

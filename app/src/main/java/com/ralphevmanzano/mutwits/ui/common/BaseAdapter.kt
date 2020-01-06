@@ -1,5 +1,6 @@
 package com.ralphevmanzano.mutwits.ui.common
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
@@ -12,10 +13,15 @@ abstract class BaseAdapter<T, DB : ViewDataBinding> constructor(diffCallBack: Di
 
   abstract fun bind(binding: DB, position: Int)
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<DB> =
-    BaseViewHolder.from(parent, viewType)
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<DB> {
+    val holder: BaseViewHolder<DB> = BaseViewHolder.from(parent, viewType)
+    onViewHolderCreated(holder)
+    return holder
+  }
 
   override fun onBindViewHolder(holder: BaseViewHolder<DB>, position: Int) {
     bind(holder.binding, holder.adapterPosition)
   }
+
+  open fun onViewHolderCreated(holder: BaseViewHolder<DB>) {}
 }
