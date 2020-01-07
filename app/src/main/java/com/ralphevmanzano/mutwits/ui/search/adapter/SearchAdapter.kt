@@ -1,6 +1,8 @@
 package com.ralphevmanzano.mutwits.ui.search.adapter
 
+import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.QueryUserItemBinding

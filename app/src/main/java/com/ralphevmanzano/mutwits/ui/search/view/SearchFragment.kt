@@ -39,6 +39,7 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
   private fun initObservers() {
     viewModel.users.observe(viewLifecycleOwner, Observer { users ->
       users?.let {
+        Log.d("Fragment", "--------------")
         adapter.submitList(users.toList())
       }
     })

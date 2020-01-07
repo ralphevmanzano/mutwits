@@ -6,10 +6,12 @@ import com.ralphevmanzano.mutwits.data.models.User
 
 class UserDiffCallBack : DiffUtil.ItemCallback<User>() {
   override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+    Log.d("DiffCallBack", "areItemsTheSame: ${oldItem.id_str == newItem.id_str}")
     return oldItem.id_str == newItem.id_str
   }
 
   override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+    Log.d("DiffCallBack", "areContentsTheSame: ${oldItem.screen_name}-${oldItem.isSelected} ${newItem.screen_name}-${newItem.isSelected} ${oldItem == newItem}")
     return oldItem == newItem
   }
 
