@@ -1,18 +1,22 @@
 package com.ralphevmanzano.mutwits.ui.search.adapter
 
-import android.content.res.ColorStateList
 import androidx.core.content.ContextCompat
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.QueryUserItemBinding
 import com.ralphevmanzano.mutwits.ui.common.BaseAdapter
 import com.ralphevmanzano.mutwits.ui.common.BaseViewHolder
-import com.ralphevmanzano.mutwits.ui.search.viewmodel.SearchViewModel
 import com.ralphevmanzano.mutwits.util.UserDiffCallBack
 import javax.inject.Inject
 
-class SearchAdapter @Inject constructor(private val viewModel: SearchViewModel) :
+class SearchAdapter @Inject constructor() :
   BaseAdapter<User, QueryUserItemBinding>(UserDiffCallBack()) {
+
+  private var addToListListener: ((user: User) -> Unit)? = null
+
+  fun setOnAddToListListener(listener: ((user: User) -> Unit)?) {
+    addToListListener = listener
+  }
 
   override fun getItemViewType(position: Int) = R.layout.query_user_item
 
@@ -23,7 +27,7 @@ class SearchAdapter @Inject constructor(private val viewModel: SearchViewModel) 
 
   override fun onViewHolderCreated(holder: BaseViewHolder<QueryUserItemBinding>) {
     holder.binding.btnAdd.setOnClickListener {
-      viewModel.selectUser(getItem(holder.adapterPosition))
+      addToListListener?.invoke(getItem(holder.adapterPosition))
     }
   }
 

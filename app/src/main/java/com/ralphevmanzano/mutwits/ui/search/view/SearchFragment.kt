@@ -3,6 +3,7 @@ package com.ralphevmanzano.mutwits.ui.search.view
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.kotlin_starter_app.ui.BaseFragment
@@ -36,17 +37,21 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
   }
 
   private fun initObservers() {
-
-    viewModel.users.observe(this, Observer { users ->
-      adapter.submitList(users.toList())
+    viewModel.users.observe(viewLifecycleOwner, Observer { users ->
+      users?.let {
+        adapter.submitList(users.toList())
+      }
     })
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    setupList()
+    initList()
   }
 
-  private fun setupList() {
+  private fun initList() {
+    adapter.setOnAddToListListener{ user ->
+      viewModel.selectUser(user)
+    }
     binding.rv.adapter = adapter
   }
 }

@@ -45,7 +45,7 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
   }
 
   fun selectUser(user: User) {
-    val temp = users.value
+    val temp = _users.value
     temp?.find { it.id_str == user.id_str }?.toggleSelected()
     _users.value = temp
   }

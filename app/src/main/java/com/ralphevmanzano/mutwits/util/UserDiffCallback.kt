@@ -1,5 +1,6 @@
 package com.ralphevmanzano.mutwits.util
 
+import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import com.ralphevmanzano.mutwits.data.models.User
 
@@ -19,7 +20,7 @@ class UserDiffCallBack : DiffUtil.ItemCallback<User>() {
     if (isSelectedEqual.not()) {
       list.add(newItem.isSelected)
     }
-
+    Log.d("DiffCallBack", "-----------------------------------")
     return list
   }
 }
