@@ -1,9 +1,7 @@
 package com.ralphevmanzano.mutwits.ui.search.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.kotlin_starter_app.ui.BaseFragment
@@ -12,7 +10,9 @@ import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.SearchFragmentBinding
 import com.ralphevmanzano.mutwits.ui.search.adapter.SearchAdapter
 import com.ralphevmanzano.mutwits.ui.search.viewmodel.SearchViewModel
+import com.ralphevmanzano.mutwits.util.extensions.observe
 import kotlinx.android.synthetic.main.activity_main.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
@@ -37,12 +37,21 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
   }
 
   private fun initObservers() {
-    viewModel.users.observe(viewLifecycleOwner, Observer { users ->
-      users?.let {
-        Log.d("Fragment", "--------------")
-        adapter.submitList(users.toList())
+    binding.vm = vm
+    
+    vm.apply {
+      observe(users) { users ->
+        users?.let {
+          adapter.submitList(users)
+        }
       }
-    })
+      observe(selectedUsers) { users ->
+        users?.let {
+          Timber.d(" size = ${it.size}")
+          binding.txtSelectedUsers.text = resources.getQuantityString(R.plurals.selectedUsers, it.size, it.size)
+        }
+      }
+    }
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,8 +59,9 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
   }
 
   private fun initList() {
-    adapter.setOnAddToListListener{ user ->
-      viewModel.selectUser(user)
+    adapter.setOnAddToListListener{ user, pos ->
+      adapter.notifyItemChanged(pos)
+      vm.selectUser(user)
     }
     binding.rv.adapter = adapter
   }

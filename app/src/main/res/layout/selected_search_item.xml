@@ -31,7 +31,7 @@
       android:id="@+id/txtName"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:text="@{user.userName}"
+      android:text="@{user.formattedUserName}"
       android:textColor="@android:color/white"
       android:textSize="12sp"
       app:layout_constraintEnd_toEndOf="parent"

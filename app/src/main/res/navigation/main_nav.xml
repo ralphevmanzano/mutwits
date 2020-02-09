@@ -8,7 +8,7 @@
   <fragment
     android:id="@+id/authFragment"
     android:name="com.ralphevmanzano.mutwits.ui.auth.AuthFragment"
-    android:label="AuthFragment" >
+    android:label="AuthFragment">
     <action
       android:id="@+id/act_auth_to_home"
       app:destination="@id/homeFragment"
@@ -19,11 +19,16 @@
   <fragment
     android:id="@+id/homeFragment"
     android:name="com.ralphevmanzano.mutwits.ui.home.HomeFragment"
-    android:label="Mutwits" >
+    android:label="Mutwits">
     <action
       android:id="@+id/act_home_to_search"
       app:destination="@id/searchFragment"
       app:launchSingleTop="true" />
+    <action
+      android:id="@+id/act_home_to_auth"
+      app:destination="@id/authFragment"
+      app:popUpTo="@+id/main_nav"
+      app:popUpToInclusive="true" />
   </fragment>
   <fragment
     android:id="@+id/searchFragment"

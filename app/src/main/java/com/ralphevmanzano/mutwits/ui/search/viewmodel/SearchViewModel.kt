@@ -1,17 +1,17 @@
 package com.ralphevmanzano.mutwits.ui.search.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.example.kotlin_starter_app.ui.BaseViewModel
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.data.repo.MutwitsRepo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
@@ -23,34 +23,68 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
 
   private val _users = MediatorLiveData<List<User>>()
   val users: LiveData<List<User>> = _users
+//  val users = mutwitsRepo.getFriends().asLiveData()
+
+  private val _selectedUsers = MutableLiveData<List<User>>(emptyList())
+  val selectedUsers: LiveData<List<User>> = _selectedUsers
+
+  private val selectedUsersList = mutableListOf<User>()
 
   private var queryTextChangedJob: Job? = null
 
   init {
     _users.addSource(query) { queryStr ->
-      Log.d("SearchViewModel", "query: $queryStr")
-      if (queryStr.isNullOrEmpty()) _users.value = emptyList()
+      Timber.d("query: $queryStr")
+      if (queryStr.isNullOrEmpty()) getAllFriends()
       else searchUsers(queryStr)
+    }
+
+    getAllFriends()
+  }
+
+  private fun getAllFriends() = viewModelScope.launch {
+    mutwitsRepo.getFriends().collect {
+      if (query.value.isNullOrEmpty()) {
+        _users.value = it
+      }
     }
   }
 
-  fun searchUsers(query: String) {
+  private fun searchUsers(query: String) {
     _isLoading.value = true
     queryTextChangedJob?.cancel()
     queryTextChangedJob = viewModelScope.launch {
       delay(300)
-      _users.value = mutwitsRepo.searchUsers(query)
-      _isLoading.value = false
+      getFriendsByName(query)
     }
   }
 
+  private suspend fun getFriendsByName(q: String) {
+    mutwitsRepo.getFriendsByName(q)
+      .collect {
+        if (!query.value.isNullOrEmpty()) {
+          Timber.d("users: $it")
+          _users.value = it
+          _isLoading.value = false
+        }
+      }
+  }
+
   fun selectUser(user: User) {
-    val temp = _users.value?.toList()
-    val foundUser = temp?.find { it.id_str == user.id_str }
-    foundUser?.let {
-      it.isSelected = it.isSelected.not()
+    user.isSelected = user.isSelected.not()
+    updateList(user)
+
+    viewModelScope.launch {
+      mutwitsRepo.updateUser(user)
     }
-    _users.value = temp
+
+  }
+
+  private fun updateList(user: User) {
+    if (user.isSelected) selectedUsersList.add(user)
+    else selectedUsersList.removeAll { it.id == user.id }
+
+    _selectedUsers.value = selectedUsersList
   }
 
   override fun onCleared() {

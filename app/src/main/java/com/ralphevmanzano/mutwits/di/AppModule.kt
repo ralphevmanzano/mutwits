@@ -1,6 +1,9 @@
 package com.ralphevmanzano.mutwits.di
 
 import android.content.Context
+import androidx.room.Room
+import com.ralphevmanzano.mutwits.data.local.AppDatabase
+import com.ralphevmanzano.mutwits.data.local.dao.UserDao
 import com.ralphevmanzano.mutwits.data.remote.Oauth1SigningInterceptor
 import com.ralphevmanzano.mutwits.data.remote.TwitterService
 import com.ralphevmanzano.mutwits.util.Constants.BASE_URL
@@ -63,5 +66,17 @@ class AppModule {
   @Singleton
   fun providesOAuth1SigningInterceptor(prefs: Prefs): Oauth1SigningInterceptor {
     return Oauth1SigningInterceptor(prefs)
+  }
+
+  @Provides
+  @Singleton
+  fun providesDatabase(context: Context) : AppDatabase {
+    return Room.databaseBuilder(context, AppDatabase::class.java, "mutwits-db").build()
+  }
+
+  @Provides
+  @Singleton
+  fun providesUserDao(db: AppDatabase): UserDao {
+    return db.userDao()
   }
 }

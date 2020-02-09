@@ -9,4 +9,12 @@
   <string name="import_str">Import</string>
   <string name="selected_user">selected user</string>
   <string name="remove">Remove</string>
+  <string name="view">VIEW</string>
+  <string name="sign_out">Sign out</string>
+
+  <plurals name="selectedUsers">
+    <item quantity="one">%d user selected</item>
+    <item quantity="few">%d users selected</item>
+    <item quantity="other">%d users selected</item>
+  </plurals>
 </resources>

@@ -9,6 +9,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.Buffer
 import okio.ByteString
+import timber.log.Timber
 import java.io.IOException
 import java.net.URLEncoder
 import java.security.GeneralSecurityException
@@ -31,8 +32,8 @@ class Oauth1SigningInterceptor(val prefs: Prefs,
     val oAuthKeys = OAuthKeys(
       consumerKey = "tsezcSYZilDxgmgNCKguTdpMS",
       consumerSecret = "qJgHZK4Y1alzW9T1rp398TZIYhvHwpdqVVSBbvfgqEf9bZ1vLc",
-      accessToken = prefs.getValue(Prefs.ACCESS_TOKEN),
-      accessSecret = prefs.getValue(Prefs.SECRET)
+      accessToken = prefs.get(Prefs.ACCESS_TOKEN),
+      accessSecret = prefs.get(Prefs.SECRET)
     )
 
     val keys = oAuthKeys
@@ -77,11 +78,13 @@ class Oauth1SigningInterceptor(val prefs: Prefs,
     val signingKey = "${keys.consumerSecret.encodeUtf8()}&${keys.accessSecret?.encodeUtf8()
       ?: ""}"
     val params = parameters.encodeForSignature()
-    val dataToSign = "$method&$baseUrl&$params"
+    val dataToSign = "$method&${baseUrl}&${params.encodeUtf8()}"
+
     parameters[OAUTH_SIGNATURE] = sign(signingKey, dataToSign).encodeUtf8()
 
     //Create auth header
     val authHeader = "OAuth ${parameters.toHeaderFormat()}"
+
     return request.newBuilder().addHeader("Authorization", authHeader).build()
   }
 
@@ -107,7 +110,9 @@ class Oauth1SigningInterceptor(val prefs: Prefs,
       .toList()
       .sortedBy { (key, _) -> key }
       .toMap()
-      .map { "${it.key}=\"${it.value}\"" }
+      .map {
+        "${it.key}=\"${it.value}\""
+      }
       .joinToString(", ")
 
 
@@ -115,9 +120,13 @@ class Oauth1SigningInterceptor(val prefs: Prefs,
     toList()
       .sortedBy { (key, _) -> key }
       .toMap()
-      .map { "${it.key}=${it.value}" }
+      .map {
+        Timber.d("key: ${it.key} value: ${it.value}")
+
+        "${it.key.encodeUtf8()}=${it.value.encodeUtf8()}"
+      }
       .joinToString("&")
-      .encodeUtf8()
+
 
   private fun String.encodeUtf8() = URLEncoder.encode(this, "UTF-8").replace("+", "%2B")
 

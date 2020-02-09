@@ -14,9 +14,9 @@ import javax.inject.Inject
 class SearchAdapter @Inject constructor() :
   BaseAdapter<User, QueryUserItemBinding>(UserDiffCallBack()) {
 
-  private var addToListListener: ((user: User) -> Unit)? = null
+  private var addToListListener: ((User, Int) -> Unit)? = null
 
-  fun setOnAddToListListener(listener: ((user: User) -> Unit)?) {
+  fun setOnAddToListListener(listener: ((User, Int) -> Unit)?) {
     addToListListener = listener
   }
 
@@ -29,7 +29,7 @@ class SearchAdapter @Inject constructor() :
 
   override fun onViewHolderCreated(holder: BaseViewHolder<QueryUserItemBinding>) {
     holder.binding.btnAdd.setOnClickListener {
-      addToListListener?.invoke(getItem(holder.adapterPosition))
+      addToListListener?.invoke(getItem(holder.adapterPosition), holder.adapterPosition)
     }
   }
 

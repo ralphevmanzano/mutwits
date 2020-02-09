@@ -12,7 +12,7 @@ class Prefs(context: Context) {
     const val SECRET = "secret"
   }
 
-  val sharedPref: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+  private val sharedPref: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
   fun save(KEY_NAME: String, value: String) {
     val editor: SharedPreferences.Editor = sharedPref.edit()
@@ -20,7 +20,7 @@ class Prefs(context: Context) {
     editor.apply()
   }
 
-  fun getValue(KEY_NAME: String): String? {
+  fun get(KEY_NAME: String): String? {
     return sharedPref.getString(KEY_NAME, null)
   }
 

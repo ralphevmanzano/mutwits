@@ -1,8 +1,6 @@
 package com.ralphevmanzano.mutwits.ui.auth
 
-import android.os.Bundle
 import android.util.Log
-import android.view.View
 import com.example.kotlin_starter_app.ui.BaseFragment
 import com.example.todo_app.util.EventObserver
 import com.google.firebase.auth.FirebaseAuth
@@ -24,8 +22,7 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
 
 
   override fun observeEvents() {
-    viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver {
-//      navigateTo(NavEventArgs(R.id.act_auth_to_home))
+    vm.loginEvent.observe(viewLifecycleOwner, EventObserver {
       checkPendingResult()
     })
   }
@@ -34,7 +31,6 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
     val pendingResultTask = firebaseAuth.pendingAuthResult
     if (pendingResultTask != null) {
       pendingResultTask.addOnSuccessListener {
-        navigateTo(NavEventArgs(R.id.act_auth_to_home))
         Log.d("Main", it.toString())
       }.addOnFailureListener {
         Log.e("Main", it.localizedMessage!!)
@@ -49,8 +45,8 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
     activity?.let { it ->
       firebaseAuth.startActivityForSignInWithProvider(it, provider.build())
         .addOnSuccessListener { authResult ->
-          viewModel.saveToken(authResult)
-          navigateTo(NavEventArgs(R.id.act_auth_to_home))
+          vm.saveToken(authResult)
+//          navigateTo(NavEventArgs(R.id.act_auth_to_home))
         }.addOnFailureListener { e ->
           Log.e("Main", e.message!!)
         }

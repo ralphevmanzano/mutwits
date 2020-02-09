@@ -27,7 +27,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
 
   protected abstract val viewModelClass: Class<VM>
 
-  protected lateinit var viewModel: VM
+  protected lateinit var vm: VM
   protected lateinit var binding: DB
 
   val mainActivity: MainActivity by lazy (mode = LazyThreadSafetyMode.NONE) {
@@ -36,7 +36,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    viewModel = ViewModelProvider(this, viewModelFactory).get(viewModelClass)
+    vm = ViewModelProvider(this, viewModelFactory).get(viewModelClass)
   }
 
   override fun onResume() {
@@ -53,7 +53,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
   ): View? {
     binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
     binding.lifecycleOwner = viewLifecycleOwner
-    binding.setVariable(BR.viewModel, viewModel)
+    binding.setVariable(BR.viewModel, vm)
     return binding.root
   }
 
@@ -66,7 +66,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
   protected open fun observeEvents() {}
 
   private fun observeNavigationEvents(){
-    viewModel.navigationEvent.observe(viewLifecycleOwner, EventObserver {
+    vm.navigationEvent.observe(viewLifecycleOwner, EventObserver {
       navigateTo(it)
     })
   }

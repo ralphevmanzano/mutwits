@@ -17,7 +17,7 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
   override fun setupToolbar() {
     mainActivity.setupToolbar(
       title = getString(R.string.app_name),
-      showBackButton = false
+      showBackBtn = false
     )
   }
 
