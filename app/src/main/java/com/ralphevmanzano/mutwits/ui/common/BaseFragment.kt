@@ -71,8 +71,13 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
     })
   }
 
-  protected fun navigateTo(navEventArgs: NavEventArgs) {
-    findNavController().navigate(navEventArgs.actionId, navEventArgs.bundle)
+  protected fun navigateTo(args: NavEventArgs) {
+    view?.post {
+      when(args) {
+        is NavEventArgs.Destination -> findNavController().navigate(args.actionId, args.bundle)
+        is NavEventArgs.Pop -> findNavController().popBackStack()
+      }
+    }
   }
 
 }

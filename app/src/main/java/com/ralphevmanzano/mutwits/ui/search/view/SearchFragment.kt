@@ -2,12 +2,13 @@ package com.ralphevmanzano.mutwits.ui.search.view
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.kotlin_starter_app.ui.BaseFragment
+import com.example.todo_app.util.EventObserver
 
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.SearchFragmentBinding
+import com.ralphevmanzano.mutwits.ui.common.LoadingDialog
 import com.ralphevmanzano.mutwits.ui.search.adapter.SearchAdapter
 import com.ralphevmanzano.mutwits.ui.search.viewmodel.SearchViewModel
 import com.ralphevmanzano.mutwits.util.extensions.observe
@@ -26,6 +27,8 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
   override val viewModelClass: Class<SearchViewModel>
     get() = SearchViewModel::class.java
 
+  private val loadingDialog = LoadingDialog()
+
   override fun setupToolbar() {
     mainActivity.setupToolbar(show = false)
     toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
@@ -38,19 +41,36 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
 
   private fun initObservers() {
     binding.vm = vm
-    
+
     vm.apply {
       observe(users) { users ->
         users?.let {
           adapter.submitList(users)
         }
       }
-      observe(selectedUsers) { users ->
-        users?.let {
-          Timber.d(" size = ${it.size}")
-          binding.txtSelectedUsers.text = resources.getQuantityString(R.plurals.selectedUsers, it.size, it.size)
+      observe(addedUsers) {
+        it?.let { users ->
+          Timber.d(" size = ${users.size}")
+          binding.txtAddedUsers.text =
+            resources.getQuantityString(R.plurals.usersToBeAdded, users.size, users.size)
         }
       }
+      observe(removedUsers) {
+        it?.let { users ->
+          binding.txtRemovedUsers.text =
+            resources.getQuantityString(R.plurals.usersToBeRemoved, users.size, users.size)
+        }
+      }
+      loadingEvent.observe(viewLifecycleOwner, EventObserver { show ->
+        Timber.d("Show: $show")
+        if (show && !loadingDialog.isVisible) loadingDialog.show(
+          activity?.supportFragmentManager!!,
+          "loading_dialog"
+        )
+        else if (loadingDialog.isVisible) {
+          loadingDialog.dismiss()
+        }
+      })
     }
   }
 
@@ -59,7 +79,7 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
   }
 
   private fun initList() {
-    adapter.setOnAddToListListener{ user, pos ->
+    adapter.setOnAddToListListener { user, pos ->
       adapter.notifyItemChanged(pos)
       vm.selectUser(user)
     }

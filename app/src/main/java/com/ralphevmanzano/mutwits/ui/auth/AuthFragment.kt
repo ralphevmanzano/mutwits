@@ -46,7 +46,6 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
       firebaseAuth.startActivityForSignInWithProvider(it, provider.build())
         .addOnSuccessListener { authResult ->
           vm.saveToken(authResult)
-//          navigateTo(NavEventArgs(R.id.act_auth_to_home))
         }.addOnFailureListener { e ->
           Log.e("Main", e.message!!)
         }

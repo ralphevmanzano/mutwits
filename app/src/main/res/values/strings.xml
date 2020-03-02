@@ -11,10 +11,18 @@
   <string name="remove">Remove</string>
   <string name="view">VIEW</string>
   <string name="sign_out">Sign out</string>
+  <string name="save">Save</string>
+  <string name="loading">Loading...</string>
 
-  <plurals name="selectedUsers">
-    <item quantity="one">%d user selected</item>
-    <item quantity="few">%d users selected</item>
-    <item quantity="other">%d users selected</item>
+  <plurals name="usersToBeAdded">
+    <item quantity="one">%d user to be added</item>
+    <item quantity="few">%d users to be added</item>
+    <item quantity="other">%d users to be added</item>
+  </plurals>
+
+  <plurals name="usersToBeRemoved">
+    <item quantity="one">%d user to be removed</item>
+    <item quantity="few">%d users to be removed</item>
+    <item quantity="other">%d users to be removed</item>
   </plurals>
 </resources>

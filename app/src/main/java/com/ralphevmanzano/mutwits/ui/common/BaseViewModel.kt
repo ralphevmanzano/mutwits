@@ -14,4 +14,7 @@ open class BaseViewModel : ViewModel() {
   protected val _navigationEvent = MutableLiveData<Event<NavEventArgs>>()
   val navigationEvent: LiveData<Event<NavEventArgs>> = _navigationEvent
 
+  protected val _loadingEvent = MutableLiveData<Event<Boolean>>()
+  val loadingEvent: LiveData<Event<Boolean>> = _loadingEvent
+
 }

@@ -10,8 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.ActivityMainBinding
+import com.ralphevmanzano.mutwits.util.Prefs
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,8 +45,15 @@ class MainActivity : AppCompatActivity() {
 
   private fun initAuth() {
     val user = firebaseAuth.currentUser
-    if (user != null) navigateTo(R.id.act_auth_to_home)
+    if (user != null) {
+      saveUserId(user)
+      navigateTo(R.id.act_auth_to_home)
+    }
     initAuthListener()
+  }
+
+  private fun saveUserId(user: FirebaseUser) {
+    Prefs.userId = user.uid
   }
 
   private fun initAuthListener() {
@@ -53,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         if (!isCurrentFragment(R.id.authFragment)) navigateTo(R.id.act_home_to_auth)
       }
       else {
+        saveUserId(user)
         if (!isCurrentFragment(R.id.homeFragment)) navigateTo(R.id.act_auth_to_home)
       }
     }

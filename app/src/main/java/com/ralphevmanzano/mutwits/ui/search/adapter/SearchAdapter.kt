@@ -20,6 +20,12 @@ class SearchAdapter @Inject constructor() :
     addToListListener = listener
   }
 
+  init {
+    setHasStableIds(true)
+  }
+
+  override fun getItemId(position: Int) = getItem(position).id.toLong()
+
   override fun getItemViewType(position: Int) = R.layout.query_user_item
 
   override fun bind(binding: QueryUserItemBinding, position: Int) {

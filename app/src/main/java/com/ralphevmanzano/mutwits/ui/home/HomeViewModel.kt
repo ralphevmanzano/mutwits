@@ -24,7 +24,8 @@ class HomeViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : 
 
   init {
 //    getMutedUsers()
-    getFriendsIds()
+//    getFriendsIds()
+    fetchFriends()
   }
 
   private fun getMutedUsers() = viewModelScope.launch {
@@ -45,33 +46,16 @@ class HomeViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : 
     }
   }
 
-  private fun getFriendsIds() = viewModelScope.launch {
-    when (val response = mutwitsRepo.getFriendIds()) {
+  private fun fetchFriends() = viewModelScope.launch {
+    when (mutwitsRepo.fetchFriends()) {
       is NetworkError -> print("Error")
       is GenericError -> print("Generic error")
-      is Success -> handleIds(response.data.ids)
+      is Success -> print("Success!")
     }
   }
 
-  private fun handleIds(ids: List<Long>) = viewModelScope.launch {
-    val chunkedIds = ids.chunked(100)
-
-    chunkedIds.asFlow()
-      .map { cids -> cids.joinToString(",") }
-      .flatMapMerge {
-        flow { emit(mutwitsRepo.lookupFriends(it)) }
-      }
-      .collect {
-        when (it) {
-          is NetworkError -> print("Error")
-          is GenericError -> print("Generic error")
-          is Success -> mutwitsRepo.saveFriends(it.data)
-        }
-      }
-  }
-
   fun goToSearch() {
-    _navigationEvent.value = Event(NavEventArgs(R.id.act_home_to_search))
+    _navigationEvent.value = Event(NavEventArgs.Destination(R.id.act_home_to_search))
   }
 
 }

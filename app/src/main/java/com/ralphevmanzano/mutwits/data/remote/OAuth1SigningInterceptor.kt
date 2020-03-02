@@ -18,9 +18,10 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.collections.HashMap
 
-class Oauth1SigningInterceptor(val prefs: Prefs,
-                               val nonce: String = UUID.randomUUID().toString(),
-                               val timestamp: Long = System.currentTimeMillis() / 1000L) : Interceptor {
+class Oauth1SigningInterceptor(
+  val nonce: String = UUID.randomUUID().toString(),
+  val timestamp: Long = System.currentTimeMillis() / 1000L
+) : Interceptor {
 
   @Throws(IOException::class)
   override fun intercept(chain: Interceptor.Chain): Response {
@@ -32,8 +33,8 @@ class Oauth1SigningInterceptor(val prefs: Prefs,
     val oAuthKeys = OAuthKeys(
       consumerKey = "tsezcSYZilDxgmgNCKguTdpMS",
       consumerSecret = "qJgHZK4Y1alzW9T1rp398TZIYhvHwpdqVVSBbvfgqEf9bZ1vLc",
-      accessToken = prefs.get(Prefs.ACCESS_TOKEN),
-      accessSecret = prefs.get(Prefs.SECRET)
+      accessToken = Prefs.accesToken,
+      accessSecret = Prefs.secretKey
     )
 
     val keys = oAuthKeys
@@ -148,6 +149,7 @@ class Oauth1SigningInterceptor(val prefs: Prefs,
       OAUTH_SIGNATURE_METHOD,
       OAUTH_TIMESTAMP,
       OAUTH_TOKEN,
-      OAUTH_VERSION)
+      OAUTH_VERSION
+    )
   }
 }

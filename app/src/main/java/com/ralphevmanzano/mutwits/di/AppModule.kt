@@ -2,6 +2,7 @@ package com.ralphevmanzano.mutwits.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.firestore.FirebaseFirestore
 import com.ralphevmanzano.mutwits.data.local.AppDatabase
 import com.ralphevmanzano.mutwits.data.local.dao.UserDao
 import com.ralphevmanzano.mutwits.data.remote.Oauth1SigningInterceptor
@@ -58,14 +59,14 @@ class AppModule {
 
   @Provides
   @Singleton
-  fun providesPrefs(context: Context): Prefs {
-    return Prefs(context)
+  fun providesFirestore(): FirebaseFirestore {
+    return FirebaseFirestore.getInstance()
   }
 
   @Provides
   @Singleton
-  fun providesOAuth1SigningInterceptor(prefs: Prefs): Oauth1SigningInterceptor {
-    return Oauth1SigningInterceptor(prefs)
+  fun providesOAuth1SigningInterceptor(): Oauth1SigningInterceptor {
+    return Oauth1SigningInterceptor()
   }
 
   @Provides

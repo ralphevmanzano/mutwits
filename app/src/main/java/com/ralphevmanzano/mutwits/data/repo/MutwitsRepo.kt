@@ -1,5 +1,6 @@
 package com.ralphevmanzano.mutwits.data.repo
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.ralphevmanzano.mutwits.data.local.dao.UserDao
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.data.remote.Result
@@ -9,11 +10,15 @@ import com.ralphevmanzano.mutwits.data.remote.models.MuteListResponse
 import com.ralphevmanzano.mutwits.data.remote.safeApiCall
 import com.ralphevmanzano.mutwits.util.Prefs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 
 class MutwitsRepo @Inject constructor(
-  val prefs: Prefs,
+  private val db: FirebaseFirestore,
   private val userDao: UserDao,
   private val twitterService: TwitterService
 ) {
@@ -22,23 +27,25 @@ class MutwitsRepo @Inject constructor(
       return@withContext twitterService.getMutedUsers(nextCursor)
     }
 
-  suspend fun searchUsers(query: String): List<User> = withContext(Dispatchers.IO) {
-    return@withContext twitterService.searchUsers(query)
-  }
+  @FlowPreview
+  suspend fun fetchFriends(): Result<Unit> = safeApiCall(Dispatchers.IO) {
+    val response = twitterService.getFriendIds()
+    val chunkedIds = response.ids.chunked(100)
 
-  suspend fun getFriendIds(): Result<FriendIdsResponse> = safeApiCall(Dispatchers.IO) {
-    twitterService.getFriendIds()
+    chunkedIds.asFlow()
+      .map { cids -> cids.joinToString(",") }
+      .flatMapMerge { flow { emit(twitterService.lookupUsers(it)) } }
+      .collect { userDao.saveUsers(it) }
   }
-
-  suspend fun lookupFriends(ids: String): Result<List<User>> = safeApiCall(Dispatchers.IO) {
-    twitterService.lookupUsers(ids)
-  }
-
-  suspend fun saveFriends(users: List<User>) = userDao.saveUsers(users)
 
   suspend fun updateUser(user: User) = userDao.updateUser(user)
 
   fun getFriends() = userDao.getUsers()
 
   fun getFriendsByName(name: String) = userDao.getUserDistinctUntilChanged(name)
+
+  suspend fun saveListToFirestore(list: List<User>): Result<Void> = safeApiCall(Dispatchers.IO) {
+    val userId = Prefs.userId
+    db.collection("list").document(userId).set(hashMapOf<String, Any>("list" to list)).await()
+  }
 }

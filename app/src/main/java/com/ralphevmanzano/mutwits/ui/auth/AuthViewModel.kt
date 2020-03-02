@@ -6,11 +6,12 @@ import com.example.kotlin_starter_app.ui.BaseViewModel
 import com.example.todo_app.util.Event
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.OAuthCredential
+import com.ralphevmanzano.mutwits.R
+import com.ralphevmanzano.mutwits.util.NavEventArgs
 import com.ralphevmanzano.mutwits.util.Prefs
 import javax.inject.Inject
 
-class AuthViewModel @Inject constructor(private val prefs: Prefs) :
-  BaseViewModel() {
+class AuthViewModel @Inject constructor() : BaseViewModel() {
 
   private val _loginEvent = MutableLiveData<Event<Unit>>()
   val loginEvent: LiveData<Event<Unit>> = _loginEvent
@@ -24,8 +25,10 @@ class AuthViewModel @Inject constructor(private val prefs: Prefs) :
     val oAuthSecret = (authResult.credential as OAuthCredential).secret
 
     oAuthSecret?.let {
-      prefs.save(Prefs.ACCESS_TOKEN, oAuthToken)
-      prefs.save(Prefs.SECRET, oAuthSecret)
+      Prefs.accesToken = oAuthToken
+      Prefs.secretKey = oAuthSecret
     }
+
+    _navigationEvent.value = Event(NavEventArgs.Destination(R.id.act_auth_to_home))
   }
 }
