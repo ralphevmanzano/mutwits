@@ -22,6 +22,11 @@ class MutwitsRepo @Inject constructor(
   private val userDao: UserDao,
   private val twitterService: TwitterService
 ) {
+
+  companion object {
+    const val FIRESTORE_LIST_PATH = "list"
+  }
+
   suspend fun getMutedUsers(nextCursor: String? = null): MuteListResponse =
     withContext(Dispatchers.IO) {
       return@withContext twitterService.getMutedUsers(nextCursor)
@@ -44,8 +49,15 @@ class MutwitsRepo @Inject constructor(
 
   fun getFriendsByName(name: String) = userDao.getUserDistinctUntilChanged(name)
 
-  suspend fun saveListToFirestore(list: List<User>): Result<Void> = safeApiCall(Dispatchers.IO) {
+  suspend fun saveListToFirestore(users: List<User>): Result<Void> = safeApiCall(Dispatchers.IO) {
     val userId = Prefs.userId
-    db.collection("list").document(userId).set(hashMapOf<String, Any>("list" to list)).await()
+
+    db.collection(FIRESTORE_LIST_PATH).document(userId).set(
+      hashMapOf<String, Any>(
+        FIRESTORE_LIST_PATH to users
+      )
+    ).await()
   }
+
+  suspend fun saveListToDB(users: List<User>) = userDao.saveUsers(users)
 }

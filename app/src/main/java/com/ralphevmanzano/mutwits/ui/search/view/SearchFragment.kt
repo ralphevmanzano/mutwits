@@ -12,6 +12,7 @@ import com.ralphevmanzano.mutwits.ui.common.LoadingDialog
 import com.ralphevmanzano.mutwits.ui.search.adapter.SearchAdapter
 import com.ralphevmanzano.mutwits.ui.search.viewmodel.SearchViewModel
 import com.ralphevmanzano.mutwits.util.extensions.observe
+import com.ralphevmanzano.mutwits.util.extensions.observeEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -48,29 +49,34 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
           adapter.submitList(users)
         }
       }
+
       observe(addedUsers) {
         it?.let { users ->
-          Timber.d(" size = ${users.size}")
           binding.txtAddedUsers.text =
             resources.getQuantityString(R.plurals.usersToBeAdded, users.size, users.size)
         }
       }
+
       observe(removedUsers) {
         it?.let { users ->
           binding.txtRemovedUsers.text =
             resources.getQuantityString(R.plurals.usersToBeRemoved, users.size, users.size)
         }
       }
-      loadingEvent.observe(viewLifecycleOwner, EventObserver { show ->
-        Timber.d("Show: $show")
-        if (show && !loadingDialog.isVisible) loadingDialog.show(
-          activity?.supportFragmentManager!!,
-          "loading_dialog"
-        )
-        else if (loadingDialog.isVisible) {
-          loadingDialog.dismiss()
+
+      observeEvent(loadingEvent) {
+        it?.let { show ->
+          Timber.d("Show: $show")
+          if (show && !loadingDialog.isVisible) loadingDialog.show(
+            activity?.supportFragmentManager!!,
+            "loading_dialog"
+          )
+          else if (loadingDialog.isVisible) {
+            loadingDialog.dismiss()
+          }
         }
-      })
+      }
+
     }
   }
 
@@ -80,9 +86,9 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
 
   private fun initList() {
     adapter.setOnAddToListListener { user, pos ->
-      adapter.notifyItemChanged(pos)
       vm.selectUser(user)
     }
+    
     binding.rv.adapter = adapter
   }
 }

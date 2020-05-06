@@ -16,6 +16,8 @@ class SearchAdapter @Inject constructor() :
 
   private var addToListListener: ((User, Int) -> Unit)? = null
 
+  private val selectedUsers = mutableListOf<User>()
+
   fun setOnAddToListListener(listener: ((User, Int) -> Unit)?) {
     addToListListener = listener
   }
@@ -35,7 +37,11 @@ class SearchAdapter @Inject constructor() :
 
   override fun onViewHolderCreated(holder: BaseViewHolder<QueryUserItemBinding>) {
     holder.binding.btnAdd.setOnClickListener {
+      val selectedUser = getItem(holder.adapterPosition)
+
+      selectedUser.isSelected = !selectedUser.isSelected
       addToListListener?.invoke(getItem(holder.adapterPosition), holder.adapterPosition)
+      notifyItemChanged(holder.adapterPosition, selectedUser.isSelected)
     }
   }
 

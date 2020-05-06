@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Dao
 abstract class UserDao {
-  @Query("SELECT * FROM user")
+  @Query("SELECT * FROM user ORDER BY LOWER(userName) ASC")
   abstract fun getUsers(): Flow<List<User>>
 
   @Query("SELECT * FROM user WHERE name LIKE '%' || :name || '%' OR userName LIKE '%' || :name || '%'")
@@ -15,7 +15,7 @@ abstract class UserDao {
 
   fun getUserDistinctUntilChanged(name: String) = getUsersByName(name).distinctUntilChanged()
 
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   abstract suspend fun saveUsers(users: List<User>)
 
   @Update

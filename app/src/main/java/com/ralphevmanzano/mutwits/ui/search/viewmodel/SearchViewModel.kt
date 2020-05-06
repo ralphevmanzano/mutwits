@@ -7,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.kotlin_starter_app.ui.BaseViewModel
 import com.example.todo_app.util.Event
 import com.ralphevmanzano.mutwits.data.models.User
+import com.ralphevmanzano.mutwits.data.remote.Result
 import com.ralphevmanzano.mutwits.data.repo.MutwitsRepo
 import com.ralphevmanzano.mutwits.util.NavEventArgs
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
@@ -81,20 +81,19 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
   }
 
   fun selectUser(user: User) {
-    user.isSelected = user.isSelected.not()
     updateList(user)
-
-    viewModelScope.launch {
-      mutwitsRepo.updateUser(user)
-    }
-
   }
 
   fun saveListToFirestore() = viewModelScope.launch {
     _loadingEvent.value = Event(true)
 
     val list = allFriendsList.filter { it.isSelected }
-    mutwitsRepo.saveListToFirestore(list)
+
+    when (mutwitsRepo.saveListToFirestore(list)) {
+      is Result.Success -> mutwitsRepo.saveListToDB(list)
+      is Result.GenericError -> {}
+      is Result.NetworkError -> {}
+    }
 
     _loadingEvent.value = Event(false)
     _navigationEvent.value = Event(NavEventArgs.Pop)
