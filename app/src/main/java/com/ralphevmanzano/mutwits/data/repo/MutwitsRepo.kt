@@ -49,6 +49,15 @@ class MutwitsRepo @Inject constructor(
 
   fun getFriendsByName(name: String) = userDao.getUserDistinctUntilChanged(name)
 
+  suspend fun saveList(users: List<User>): Result<Void> {
+    val firestoreResult = saveListToFirestore(users)
+    if (firestoreResult is Result.Success) {
+      saveListToDB(users)
+    }
+
+    return firestoreResult
+  }
+
   suspend fun saveListToFirestore(users: List<User>): Result<Void> = safeApiCall(Dispatchers.IO) {
     val userId = Prefs.userId
 

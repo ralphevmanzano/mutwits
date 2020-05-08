@@ -14,6 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
@@ -50,6 +51,7 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
     getAllFriends()
   }
 
+  // TODO: use livedata builder
   private fun getAllFriends() = viewModelScope.launch {
 
     mutwitsRepo.getFriends().collect {
@@ -89,8 +91,8 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
 
     val list = allFriendsList.filter { it.isSelected }
 
-    when (mutwitsRepo.saveListToFirestore(list)) {
-      is Result.Success -> mutwitsRepo.saveListToDB(list)
+    when (mutwitsRepo.saveList(list)) {
+      is Result.Success -> Timber.d("Success!!")
       is Result.GenericError -> {}
       is Result.NetworkError -> {}
     }
