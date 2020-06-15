@@ -1,18 +1,17 @@
 package com.ralphevmanzano.mutwits.ui.search.adapter
 
-import android.util.Log
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DiffUtil
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.QueryUserItemBinding
 import com.ralphevmanzano.mutwits.ui.common.BaseAdapter
 import com.ralphevmanzano.mutwits.ui.common.BaseViewHolder
 import com.ralphevmanzano.mutwits.util.UserDiffCallBack
+import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
-class SearchAdapter @Inject constructor() :
-  BaseAdapter<User, QueryUserItemBinding>(UserDiffCallBack()) {
+@FragmentScoped
+class SearchAdapter @Inject constructor() : BaseAdapter<User, QueryUserItemBinding>(UserDiffCallBack()) {
 
   private var addToListListener: ((User, Int) -> Unit)? = null
 

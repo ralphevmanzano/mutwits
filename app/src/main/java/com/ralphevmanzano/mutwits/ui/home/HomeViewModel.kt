@@ -1,5 +1,6 @@
 package com.ralphevmanzano.mutwits.ui.home
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,13 +12,12 @@ import com.ralphevmanzano.mutwits.data.remote.Result.*
 import com.ralphevmanzano.mutwits.data.repo.MutwitsRepo
 import com.ralphevmanzano.mutwits.util.NavEventArgs
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 @FlowPreview
-class HomeViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
+class HomeViewModel @ViewModelInject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
 
   private val _mutedUsers = MutableLiveData<List<User>>(emptyList())
   val mutedUsers: LiveData<List<User>> = _mutedUsers
@@ -25,17 +25,17 @@ class HomeViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : 
   init {
 //    getMutedUsers()
 //    getFriendsIds()
-    fetchFriends()
+//    fetchFriends()
   }
 
   private fun getMutedUsers() = viewModelScope.launch {
     val temp = mutableListOf<User>()
     try {
-      val muteListResponse = mutwitsRepo.getMutedUsers()
+      val muteListResponse = mutwitsRepo.fetchMutedUsers()
       temp.addAll(muteListResponse.users)
       var nextCursor = muteListResponse.next_cursor_str
       while (nextCursor != "0") {
-        val response = mutwitsRepo.getMutedUsers(nextCursor)
+        val response = mutwitsRepo.fetchMutedUsers(nextCursor)
         temp.addAll(response.users)
         nextCursor = response.next_cursor_str
       }

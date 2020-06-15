@@ -1,16 +1,12 @@
 package com.ralphevmanzano.mutwits
 
-import com.ralphevmanzano.mutwits.di.DaggerAppComponent
+import android.app.Application
 import com.ralphevmanzano.mutwits.util.Prefs
-import dagger.android.AndroidInjector
-import dagger.android.DaggerApplication
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
-class App : DaggerApplication() {
-
-  override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-    return DaggerAppComponent.factory().create(applicationContext)
-  }
+@HiltAndroidApp
+class App : Application() {
 
   override fun onCreate() {
     super.onCreate()

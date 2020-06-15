@@ -4,10 +4,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.ralphevmanzano.mutwits.data.local.dao.UserDao
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.data.remote.Result
-import com.ralphevmanzano.mutwits.data.remote.TwitterService
-import com.ralphevmanzano.mutwits.data.remote.models.FriendIdsResponse
+import com.ralphevmanzano.mutwits.data.remote.services.TwitterApiService
 import com.ralphevmanzano.mutwits.data.remote.models.MuteListResponse
 import com.ralphevmanzano.mutwits.data.remote.safeApiCall
+import com.ralphevmanzano.mutwits.data.remote.services.TwitterService
 import com.ralphevmanzano.mutwits.util.Prefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -27,10 +27,7 @@ class MutwitsRepo @Inject constructor(
     const val FIRESTORE_LIST_PATH = "list"
   }
 
-  suspend fun getMutedUsers(nextCursor: String? = null): MuteListResponse =
-    withContext(Dispatchers.IO) {
-      return@withContext twitterService.getMutedUsers(nextCursor)
-    }
+  suspend fun fetchMutedUsers(nextCursor: String? = null) = twitterService.getMutedUsers(nextCursor)
 
   @FlowPreview
   suspend fun fetchFriends(): Result<Unit> = safeApiCall(Dispatchers.IO) {
@@ -39,7 +36,7 @@ class MutwitsRepo @Inject constructor(
 
     chunkedIds.asFlow()
       .map { cids -> cids.joinToString(",") }
-      .flatMapMerge { flow { emit(twitterService.lookupUsers(it)) } }
+      .flatMapMerge { flow { emit(twitterService.getFriendsByIds(it)) } }
       .collect { userDao.saveUsers(it) }
   }
 

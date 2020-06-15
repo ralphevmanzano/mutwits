@@ -2,21 +2,26 @@ package com.ralphevmanzano.mutwits.ui.search.view
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.kotlin_starter_app.ui.BaseFragment
 import com.example.todo_app.util.EventObserver
 
 import com.ralphevmanzano.mutwits.R
+import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.SearchFragmentBinding
 import com.ralphevmanzano.mutwits.ui.common.LoadingDialog
 import com.ralphevmanzano.mutwits.ui.search.adapter.SearchAdapter
 import com.ralphevmanzano.mutwits.ui.search.viewmodel.SearchViewModel
 import com.ralphevmanzano.mutwits.util.extensions.observe
 import com.ralphevmanzano.mutwits.util.extensions.observeEvent
+import com.zhuinden.livedatacombinetuplekt.combineTuple
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
 
   @Inject
@@ -50,19 +55,23 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
         }
       }
 
-      observe(addedUsers) {
-        it?.let { users ->
-          binding.txtAddedUsers.text =
-            resources.getQuantityString(R.plurals.usersToBeAdded, users.size, users.size)
+      combineTuple(addedUsers, removedUsers).observe(viewLifecycleOwner, Observer { (added, removed) ->
+        binding.run {
+          if (!added.isNullOrEmpty() || !removed.isNullOrEmpty()) {
+            banner.visibility = View.VISIBLE
+            added?.let {
+              if (it.isNotEmpty()) txtAddedUsers.text = resources.getQuantityString(R.plurals.usersToBeAdded, it.size, it.size)
+              txtAddedUsers.visibility = if (it.isNotEmpty()) View.VISIBLE else View.GONE
+            }
+            removed?.let {
+              if (it.isNotEmpty()) binding.txtRemovedUsers.text = resources.getQuantityString(R.plurals.usersToBeRemoved, it.size, it.size)
+              txtRemovedUsers.visibility = if (it.isNotEmpty()) View.VISIBLE else View.GONE
+            }
+          } else {
+            banner.visibility = View.GONE
+          }
         }
-      }
-
-      observe(removedUsers) {
-        it?.let { users ->
-          binding.txtRemovedUsers.text =
-            resources.getQuantityString(R.plurals.usersToBeRemoved, users.size, users.size)
-        }
-      }
+      })
 
       observeEvent(loadingEvent) {
         it?.let { show ->

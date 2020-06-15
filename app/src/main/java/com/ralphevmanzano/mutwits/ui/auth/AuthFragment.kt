@@ -1,39 +1,53 @@
 package com.ralphevmanzano.mutwits.ui.auth
 
-import android.util.Log
+import android.view.View
 import com.example.kotlin_starter_app.ui.BaseFragment
-import com.example.todo_app.util.EventObserver
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.AuthFragmentBinding
-import com.ralphevmanzano.mutwits.util.NavEventArgs
+import com.ralphevmanzano.mutwits.util.extensions.observe
+import com.ralphevmanzano.mutwits.util.extensions.observeEvent
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
+import timber.log.Timber
+import javax.inject.Inject
 
 
+@FlowPreview
+@AndroidEntryPoint
 class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
 
-  private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+  @Inject
+  lateinit var firebaseAuth: FirebaseAuth
 
-  override val layoutRes: Int
-    get() = R.layout.auth_fragment
+  override val layoutRes = R.layout.auth_fragment
 
-  override val viewModelClass: Class<AuthViewModel>
-    get() = AuthViewModel::class.java
+  override val viewModelClass: Class<AuthViewModel> = AuthViewModel::class.java
 
-
-  override fun observeEvents() {
-    vm.loginEvent.observe(viewLifecycleOwner, EventObserver {
-      checkPendingResult()
-    })
+  override fun observeLiveData() {
+    vm.run {
+      observeEvent(loginEvent) {
+        checkPendingResult()
+      }
+      observe(showLoading) { show ->
+        show?.let {
+          binding.run {
+            pb.visibility = if (it) View.VISIBLE else View.GONE
+            btnTwitter.visibility = if (it) View.GONE else View.VISIBLE
+          }
+        }
+      }
+    }
   }
 
   private fun checkPendingResult() {
     val pendingResultTask = firebaseAuth.pendingAuthResult
     if (pendingResultTask != null) {
       pendingResultTask.addOnSuccessListener {
-        Log.d("Main", it.toString())
+        Timber.d(it.toString())
       }.addOnFailureListener {
-        Log.e("Main", it.localizedMessage!!)
+        Timber.e(it.localizedMessage!!)
       }
     } else {
       startSignInFlow()
@@ -43,11 +57,17 @@ class AuthFragment : BaseFragment<AuthViewModel, AuthFragmentBinding>() {
   private fun startSignInFlow() {
     val provider = OAuthProvider.newBuilder("twitter.com")
     activity?.let { it ->
+      vm.showLoading(true)
       firebaseAuth.startActivityForSignInWithProvider(it, provider.build())
         .addOnSuccessListener { authResult ->
-          vm.saveToken(authResult)
+          val profileMap = authResult.additionalUserInfo!!.profile
+
+          Timber.d("Sign in: ${authResult.additionalUserInfo?.profile}")
+          vm.saveTokenAndFetchProfileInfo(authResult)
         }.addOnFailureListener { e ->
-          Log.e("Main", e.message!!)
+          Timber.e("Sign in failed: ${e.localizedMessage} ${e.message!!}")
+        }.addOnCompleteListener {
+          vm.showLoading(false)
         }
     }
   }

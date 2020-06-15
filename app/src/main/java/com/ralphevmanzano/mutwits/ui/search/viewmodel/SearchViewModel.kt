@@ -1,5 +1,6 @@
 package com.ralphevmanzano.mutwits.ui.search.viewmodel
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,14 +16,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
-class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
+class SearchViewModel @ViewModelInject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
 
   val query = MutableLiveData<String>()
-
-  private val _isLoading = MutableLiveData<Boolean>()
-  val isLoading: LiveData<Boolean> = _isLoading
 
   private val _users = MediatorLiveData<List<User>>()
   val users: LiveData<List<User>> = _users
@@ -51,7 +48,6 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
     getAllFriends()
   }
 
-  // TODO: use livedata builder
   private fun getAllFriends() = viewModelScope.launch {
 
     mutwitsRepo.getFriends().collect {
@@ -64,12 +60,10 @@ class SearchViewModel @Inject constructor(private val mutwitsRepo: MutwitsRepo) 
   }
 
   private fun searchUsers(query: String) {
-    _isLoading.value = true
     queryTextChangedJob?.cancel()
     queryTextChangedJob = viewModelScope.launch {
       delay(300)
       getFriendsByName(query)
-      _isLoading.value = false
     }
   }
 

@@ -7,20 +7,16 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.todo_app.util.EventObserver
 import com.ralphevmanzano.mutwits.BR
 import com.ralphevmanzano.mutwits.ui.MainActivity
 import com.ralphevmanzano.mutwits.util.NavEventArgs
-import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
-  DaggerFragment() {
-
-  @Inject
-  lateinit var viewModelFactory: ViewModelProvider.Factory
+abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> : Fragment() {
 
   @get:LayoutRes
   protected abstract val layoutRes: Int
@@ -36,7 +32,7 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    vm = ViewModelProvider(this, viewModelFactory).get(viewModelClass)
+    vm = ViewModelProvider(this).get(viewModelClass)
   }
 
   override fun onResume() {
@@ -60,10 +56,10 @@ abstract class BaseFragment<VM : BaseViewModel, DB : ViewDataBinding> :
   override fun onActivityCreated(savedInstanceState: Bundle?) {
     super.onActivityCreated(savedInstanceState)
     observeNavigationEvents()
-    observeEvents()
+    observeLiveData()
   }
 
-  protected open fun observeEvents() {}
+  protected open fun observeLiveData() {}
 
   private fun observeNavigationEvents(){
     vm.navigationEvent.observe(viewLifecycleOwner, EventObserver {

@@ -14,11 +14,13 @@ import com.google.firebase.auth.FirebaseUser
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.databinding.ActivityMainBinding
 import com.ralphevmanzano.mutwits.util.Prefs
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-  private val firebaseAuth = FirebaseAuth.getInstance()
+  @Inject lateinit var firebaseAuth: FirebaseAuth
 
   lateinit var binding: ActivityMainBinding
 
@@ -62,17 +64,12 @@ class MainActivity : AppCompatActivity() {
       if (user == null) {
         if (!isCurrentFragment(R.id.authFragment)) navigateTo(R.id.act_home_to_auth)
       }
-      else {
-        saveUserId(user)
-        if (!isCurrentFragment(R.id.homeFragment)) navigateTo(R.id.act_auth_to_home)
-      }
     }
   }
 
   private fun isCurrentFragment(@IdRes id: Int) = findNavController().currentDestination?.id == id
 
   private fun findNavController() = findNavController(R.id.nav_host_fragment)
-
 
   private fun initToolbar() {
     setSupportActionBar(binding.toolbar)

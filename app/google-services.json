@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1007848387547-aqn5pg5953i957skj40r1bvcvmmdr80j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ralphevmanzano.mutwits",
+            "certificate_hash": "c0e3d140938205ebacaf7933a04c2868bf897721"
+          }
+        },
+        {
           "client_id": "1007848387547-85lk9u9p2rcro8ophrmsisutoomnpp62.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
