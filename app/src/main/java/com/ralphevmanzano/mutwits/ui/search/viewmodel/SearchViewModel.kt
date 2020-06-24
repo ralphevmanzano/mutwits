@@ -11,27 +11,33 @@ import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.data.remote.Result
 import com.ralphevmanzano.mutwits.data.repo.MutwitsRepo
 import com.ralphevmanzano.mutwits.util.NavEventArgs
+import com.ralphevmanzano.mutwits.util.extensions.toLiveData
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@FlowPreview
 class SearchViewModel @ViewModelInject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
 
   val query = MutableLiveData<String>()
 
   private val _users = MediatorLiveData<List<User>>()
-  val users: LiveData<List<User>> = _users
+  val users = _users.toLiveData()
 
   private val _selectedUsers = MutableLiveData<List<User>>(emptyList())
   val selectedUsers: LiveData<List<User>> = _selectedUsers
 
   private val _addedUsers = MutableLiveData<List<User>>(emptyList())
-  val addedUsers: LiveData<List<User>> = _addedUsers
+  val addedUsers = _addedUsers.toLiveData()
 
   private val _removedUsers = MutableLiveData<List<User>>(emptyList())
-  val removedUsers: LiveData<List<User>> = _removedUsers
+  val removedUsers = _removedUsers.toLiveData()
+
+  private val _showLoadingList = MutableLiveData<Event<Boolean>>()
+  val showLoadingList = _showLoadingList.toLiveData()
 
   private val addedUsersList = mutableListOf<User>()
   private val removedUsersList = mutableListOf<User>()
@@ -46,16 +52,25 @@ class SearchViewModel @ViewModelInject constructor(private val mutwitsRepo: Mutw
     }
 
     getAllFriends()
+    fetchFriends()
   }
 
   private fun getAllFriends() = viewModelScope.launch {
-
     mutwitsRepo.getFriends().collect {
+      showLoading(it.isEmpty())
+
       if (query.value.isNullOrEmpty()) {
         allFriendsList.clear()
         allFriendsList.addAll(it)
         _users.value = it
       }
+    }
+  }
+
+  private fun fetchFriends() = viewModelScope.launch {
+    when (mutwitsRepo.fetchFriends()) {
+      is Result.Success -> showLoading(false)
+      else -> showLoading(false)
     }
   }
 
@@ -108,6 +123,10 @@ class SearchViewModel @ViewModelInject constructor(private val mutwitsRepo: Mutw
         _removedUsers.value = removedUsersList
       }
     }
+  }
+
+  private fun showLoading(isLoading: Boolean) {
+    _showLoadingList.value = Event(isLoading)
   }
 
   override fun onCleared() {

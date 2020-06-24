@@ -7,5 +7,5 @@ data class Profile(
     val userName: String,
     val imgUrl: String,
     val noOfFriends: Int = 0,
-    val noOfMutedFriends: Int = 0
+    var noOfMutedFriends: Int = 0
 )

@@ -18,9 +18,11 @@ import com.ralphevmanzano.mutwits.util.extensions.observeEvent
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@FlowPreview
 @AndroidEntryPoint
 class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
 
@@ -40,14 +42,7 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
     toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
   }
 
-  override fun onActivityCreated(savedInstanceState: Bundle?) {
-    super.onActivityCreated(savedInstanceState)
-    initObservers()
-  }
-
-  private fun initObservers() {
-    binding.vm = vm
-
+  override fun observeLiveData() {
     vm.apply {
       observe(users) { users ->
         users?.let {
@@ -86,11 +81,20 @@ class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
         }
       }
 
+      observeEvent(showLoadingList) {
+        it?.let { isLoading ->
+          binding.run {
+            pb.visibility = if (isLoading) View.VISIBLE else View.GONE
+            rv.visibility = if (isLoading) View.GONE else View.VISIBLE
+          }
+        }
+      }
     }
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     initList()
+    binding.vm = vm
   }
 
   private fun initList() {

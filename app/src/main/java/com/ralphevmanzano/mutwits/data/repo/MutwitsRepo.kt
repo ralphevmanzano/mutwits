@@ -6,6 +6,7 @@ import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.data.remote.Result
 import com.ralphevmanzano.mutwits.data.remote.services.TwitterApiService
 import com.ralphevmanzano.mutwits.data.remote.models.MuteListResponse
+import com.ralphevmanzano.mutwits.data.remote.models.MutedIdsResponse
 import com.ralphevmanzano.mutwits.data.remote.safeApiCall
 import com.ralphevmanzano.mutwits.data.remote.services.TwitterService
 import com.ralphevmanzano.mutwits.util.Prefs
@@ -38,6 +39,10 @@ class MutwitsRepo @Inject constructor(
       .map { cids -> cids.joinToString(",") }
       .flatMapMerge { flow { emit(twitterService.getFriendsByIds(it)) } }
       .collect { userDao.saveUsers(it) }
+  }
+
+  suspend fun fetchMutedIds(): Result<MutedIdsResponse> = safeApiCall(Dispatchers.IO) {
+    twitterService.getMutedIds()
   }
 
   suspend fun updateUser(user: User) = userDao.updateUser(user)

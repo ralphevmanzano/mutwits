@@ -1,7 +1,6 @@
 package com.ralphevmanzano.mutwits.ui.auth
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.kotlin_starter_app.ui.BaseViewModel
@@ -16,8 +15,6 @@ import com.ralphevmanzano.mutwits.util.Prefs
 import com.ralphevmanzano.mutwits.util.extensions.toLiveData
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import javax.inject.Inject
 
 @FlowPreview
 class AuthViewModel @ViewModelInject constructor(private val mutwitsRepo: MutwitsRepo) : BaseViewModel() {
@@ -41,7 +38,7 @@ class AuthViewModel @ViewModelInject constructor(private val mutwitsRepo: Mutwit
       Prefs.secretKey = oAuthSecret
     }
 
-    fetchFriends()
+    getMutedCount()
   }
 
   fun showLoading(shouldShow: Boolean) {
@@ -50,16 +47,18 @@ class AuthViewModel @ViewModelInject constructor(private val mutwitsRepo: Mutwit
     }
   }
 
-  private fun fetchFriends() = viewModelScope.launch {
-    Timber.d("Fetching friends")
-
-    when (mutwitsRepo.fetchFriends()) {
+  private fun getMutedCount() = viewModelScope.launch {
+    when (val mutedIdsResponse = mutwitsRepo.fetchMutedIds()) {
       is Result.Success -> {
+        val temp = Prefs.userProfile
+        temp?.noOfMutedFriends = mutedIdsResponse.data.ids.size
+        Prefs.userProfile = temp
+
         showLoading(false)
         _navigationEvent.value = Event(NavEventArgs.Destination(R.id.act_auth_to_home))
       }
-      else -> showLoading(false)
+      else -> {//TODO: show error and sign out}
+      }
     }
   }
-
 }

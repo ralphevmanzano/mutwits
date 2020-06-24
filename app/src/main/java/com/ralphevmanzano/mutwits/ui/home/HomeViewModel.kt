@@ -46,14 +46,6 @@ class HomeViewModel @ViewModelInject constructor(private val mutwitsRepo: Mutwit
     }
   }
 
-  private fun fetchFriends() = viewModelScope.launch {
-    when (mutwitsRepo.fetchFriends()) {
-      is NetworkError -> print("Error")
-      is GenericError -> print("Generic error")
-      is Success -> print("Success!")
-    }
-  }
-
   fun goToSearch() {
     _navigationEvent.value = Event(NavEventArgs.Destination(R.id.act_home_to_search))
   }
