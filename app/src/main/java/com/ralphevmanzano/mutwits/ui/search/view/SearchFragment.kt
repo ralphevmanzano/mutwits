@@ -18,90 +18,126 @@ import com.ralphevmanzano.mutwits.util.extensions.observeEvent
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
 @FlowPreview
 @AndroidEntryPoint
 class SearchFragment : BaseFragment<SearchViewModel, SearchFragmentBinding>() {
 
-  @Inject
-  lateinit var adapter: SearchAdapter
+	@Inject
+	lateinit var adapter: SearchAdapter
 
-  override val layoutRes: Int
-    get() = R.layout.search_fragment
+	override val layoutRes: Int
+		get() = R.layout.search_fragment
 
-  override val viewModelClass: Class<SearchViewModel>
-    get() = SearchViewModel::class.java
+	override val viewModelClass: Class<SearchViewModel>
+		get() = SearchViewModel::class.java
 
-  private val loadingDialog = LoadingDialog()
+	private val loadingDialog = LoadingDialog()
 
-  override fun setupToolbar() {
-    mainActivity.setupToolbar(show = false)
-    toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
-  }
+	override fun setupToolbar() {
+		mainActivity.setupToolbar(show = false)
+		toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+	}
 
-  override fun observeLiveData() {
-    vm.apply {
-      observe(users) { users ->
-        users?.let {
-          adapter.submitList(users)
-        }
-      }
+	override fun observeLiveData() {
+		vm.apply {
+			observe(users) { users ->
+				users?.let {
+					// This is to handle that selected users before loading of fresh data
+					// would still be selected after loading of fresh data
 
-      combineTuple(addedUsers, removedUsers).observe(viewLifecycleOwner, Observer { (added, removed) ->
-        binding.run {
-          if (!added.isNullOrEmpty() || !removed.isNullOrEmpty()) {
-            banner.visibility = View.VISIBLE
-            added?.let {
-              if (it.isNotEmpty()) txtAddedUsers.text = resources.getQuantityString(R.plurals.usersToBeAdded, it.size, it.size)
-              txtAddedUsers.visibility = if (it.isNotEmpty()) View.VISIBLE else View.GONE
-            }
-            removed?.let {
-              if (it.isNotEmpty()) binding.txtRemovedUsers.text = resources.getQuantityString(R.plurals.usersToBeRemoved, it.size, it.size)
-              txtRemovedUsers.visibility = if (it.isNotEmpty()) View.VISIBLE else View.GONE
-            }
-          } else {
-            banner.visibility = View.GONE
-          }
-        }
-      })
+					val usersToUpdate = mutableListOf<User>()
+					val toAddList = getAddedList()
+					val toRemoveList = getRemovedList()
 
-      observeEvent(loadingEvent) {
-        it?.let { show ->
-          Timber.d("Show: $show")
-          if (show && !loadingDialog.isVisible) loadingDialog.show(
-            activity?.supportFragmentManager!!,
-            "loading_dialog"
-          )
-          else if (loadingDialog.isVisible) {
-            loadingDialog.dismiss()
-          }
-        }
-      }
+					if (toAddList.isNotEmpty()) {
+						usersToUpdate.addAll(getAddedList())
+					}
+					if (toRemoveList.isNotEmpty()) {
+						usersToUpdate.addAll(getAddedList())
+					}
 
-      observeEvent(showLoadingList) {
-        it?.let { isLoading ->
-          binding.run {
-            pb.visibility = if (isLoading) View.VISIBLE else View.GONE
-            rv.visibility = if (isLoading) View.GONE else View.VISIBLE
-          }
-        }
-      }
-    }
-  }
+					if (usersToUpdate.isNotEmpty()) {
+						usersToUpdate.forEach { updatedUser ->
+							users.find { it.id == updatedUser.id }?.isSelected = updatedUser.isSelected
+						}
+					}
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    initList()
-    binding.vm = vm
-  }
+					adapter.submitList(users)
+				}
+			}
 
-  private fun initList() {
-    adapter.setOnAddToListListener { user, pos ->
-      vm.selectUser(user)
-    }
-    
-    binding.rv.adapter = adapter
-  }
+			combineTuple(addedUsers, removedUsers).observe(
+				viewLifecycleOwner,
+				Observer { (added, removed) ->
+					binding.run {
+						if (!added.isNullOrEmpty() || !removed.isNullOrEmpty()) {
+							banner.visibility = View.VISIBLE
+							added?.let {
+								if (it.isNotEmpty()) txtAddedUsers.text =
+									resources.getQuantityString(
+										R.plurals.usersToBeAdded,
+										it.size,
+										it.size
+									)
+								txtAddedUsers.visibility =
+									if (it.isNotEmpty()) View.VISIBLE else View.GONE
+							}
+							removed?.let {
+								if (it.isNotEmpty()) binding.txtRemovedUsers.text =
+									resources.getQuantityString(
+										R.plurals.usersToBeRemoved,
+										it.size,
+										it.size
+									)
+								txtRemovedUsers.visibility =
+									if (it.isNotEmpty()) View.VISIBLE else View.GONE
+							}
+						} else {
+							banner.visibility = View.GONE
+						}
+					}
+				})
+
+			observeEvent(loadingEvent) {
+				it?.let { show ->
+					Timber.d("Show: $show")
+					if (show && !loadingDialog.isVisible) loadingDialog.show(
+						activity?.supportFragmentManager!!,
+						"loading_dialog"
+					)
+					else if (loadingDialog.isVisible) {
+						loadingDialog.dismiss()
+					}
+				}
+			}
+
+			observeEvent(showLoadingList) {
+				it?.let { isLoading ->
+					binding.run {
+						pb.visibility = if (isLoading) View.VISIBLE else View.GONE
+						rv.visibility = if (isLoading) View.GONE else View.VISIBLE
+					}
+				}
+			}
+		}
+	}
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		initList()
+		binding.vm = vm
+	}
+
+	private fun initList() {
+		adapter.setOnAddToListListener { user, pos ->
+			vm.selectUser(user)
+		}
+
+		binding.rv.adapter = adapter
+	}
 }

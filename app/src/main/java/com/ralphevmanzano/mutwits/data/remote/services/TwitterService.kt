@@ -1,13 +1,12 @@
 package com.ralphevmanzano.mutwits.data.remote.services
 
 import com.ralphevmanzano.mutwits.data.models.User
-import com.ralphevmanzano.mutwits.data.remote.models.MutedIdsResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TwitterService @Inject constructor(private val twitterApiService: TwitterApiService) : TwitterApiService {
-    override suspend fun getMutedUsers(nextCursor: String?) = withContext(Dispatchers.IO) {
+    override suspend fun getMutedUsers(nextCursor: Long?) = withContext(Dispatchers.IO) {
         return@withContext twitterApiService.getMutedUsers(nextCursor)
     }
 
@@ -24,8 +23,8 @@ class TwitterService @Inject constructor(private val twitterApiService: TwitterA
         return@withContext twitterApiService.getMutedIds()
     }
 
-    override suspend fun getFriendsByIds(ids: String) = withContext(Dispatchers.IO) {
-        return@withContext twitterApiService.getFriendsByIds(ids)
+    override suspend fun getUsersByIds(ids: String) = withContext(Dispatchers.IO) {
+        return@withContext twitterApiService.getUsersByIds(ids)
     }
 
 }

@@ -10,7 +10,7 @@ import retrofit2.http.Query
 interface TwitterApiService {
 
   @GET("mutes/users/list.json")
-  suspend fun getMutedUsers(@Query("cursor") nextCursor: String? = null): MuteListResponse
+  suspend fun getMutedUsers(@Query("cursor") nextCursor: Long? = null): MuteListResponse
 
   @GET("users/search.json")
   suspend fun searchUsers(@Query("q") query: String): List<User>
@@ -21,8 +21,7 @@ interface TwitterApiService {
   @GET("mutes/users/ids.json")
   suspend fun getMutedIds(): MutedIdsResponse
 
-
   @GET("users/lookup.json")
-  suspend fun getFriendsByIds(@Query(value = "user_id", encoded = true) ids: String): List<User>
+  suspend fun getUsersByIds(@Query(value = "user_id", encoded = true) ids: String): List<User>
 
 }

@@ -11,63 +11,69 @@ import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Inject
 
 @FragmentScoped
-class SearchAdapter @Inject constructor() : BaseAdapter<User, QueryUserItemBinding>(UserDiffCallBack()) {
+class SearchAdapter @Inject constructor() :
+    BaseAdapter<User, QueryUserItemBinding>(UserDiffCallBack()) {
 
-  private var addToListListener: ((User, Int) -> Unit)? = null
+    private var addToListListener: ((User, Int) -> Unit)? = null
 
-  private val selectedUsers = mutableListOf<User>()
+    private val selectedUsers = mutableListOf<User>()
 
-  fun setOnAddToListListener(listener: ((User, Int) -> Unit)?) {
-    addToListListener = listener
-  }
-
-  init {
-    setHasStableIds(true)
-  }
-
-  override fun getItemId(position: Int) = getItem(position).id.toLong()
-
-  override fun getItemViewType(position: Int) = R.layout.query_user_item
-
-  override fun bind(binding: QueryUserItemBinding, position: Int) {
-    binding.user = getItem(position)
-    binding.executePendingBindings()
-  }
-
-  override fun onViewHolderCreated(holder: BaseViewHolder<QueryUserItemBinding>) {
-    holder.binding.btnAdd.setOnClickListener {
-      val selectedUser = getItem(holder.adapterPosition)
-
-      selectedUser.isSelected = !selectedUser.isSelected
-      addToListListener?.invoke(getItem(holder.adapterPosition), holder.adapterPosition)
-      notifyItemChanged(holder.adapterPosition, selectedUser.isSelected)
+    fun setOnAddToListListener(listener: ((User, Int) -> Unit)?) {
+        addToListListener = listener
     }
-  }
 
-  override fun onBindViewHolder(
-    holder: BaseViewHolder<QueryUserItemBinding>,
-    position: Int,
-    payloads: MutableList<Any>
-  ) {
-    if (payloads.isEmpty()) {
-      super.onBindViewHolder(holder, position, payloads)
-    } else {
-      val isSelected: Boolean = payloads[0] as Boolean
-
-      holder.binding.btnAdd.apply {
-        text = if (isSelected) "Remove" else "Add"
-        setTextColor(
-          ContextCompat.getColor(
-            this.context,
-            if (isSelected) R.color.red else R.color.colorPrimary
-          )
-        )
-        strokeColor = ContextCompat.getColorStateList(
-          this.context,
-          if (isSelected) R.color.red else R.color.colorPrimary
-        )
-      }
+    init {
+        setHasStableIds(true)
     }
-  }
 
+    override fun getItemId(position: Int) = getItem(position).id.toLong()
+
+    override fun getItemViewType(position: Int) = R.layout.query_user_item
+
+    override fun bind(binding: QueryUserItemBinding, position: Int) {
+        // Handled on on bind with payload
+    }
+
+    override fun onViewHolderCreated(holder: BaseViewHolder<QueryUserItemBinding>) {
+        holder.binding.btnAdd.setOnClickListener {
+            handleOnClick(holder)
+        }
+    }
+
+    private fun handleOnClick(holder: BaseViewHolder<QueryUserItemBinding>) {
+        val selectedUser = getItem(holder.adapterPosition)
+
+        selectedUser.isSelected = !selectedUser.isSelected
+        addToListListener?.invoke(getItem(holder.adapterPosition), holder.adapterPosition)
+        notifyItemChanged(holder.adapterPosition, selectedUser.isSelected)
+    }
+
+    override fun onBindViewHolder(
+        holder: BaseViewHolder<QueryUserItemBinding>,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        holder.binding.user = getItem(position)
+        holder.binding.executePendingBindings()
+
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            val isSelected: Boolean = payloads[0] as Boolean
+
+            holder.binding.btnAdd.apply {
+                text = if (isSelected) "Remove" else "Add"
+                setTextColor(
+                    ContextCompat.getColor(
+                        this.context,
+                        if (isSelected) R.color.red else R.color.colorPrimary
+                    )
+                )
+                strokeColor = ContextCompat.getColorStateList(
+                    this.context,
+                    if (isSelected) R.color.red else R.color.colorPrimary
+                )
+            }
+        }
+    }
 }
