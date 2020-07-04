@@ -113,8 +113,13 @@ class SearchViewModel @ViewModelInject constructor(private val mutwitsRepo: Mutw
 
 	private fun updateList(user: User) {
 		if (user.isSelected) {
-			addedUsersList.add(user)
-			_addedUsers.value = addedUsersList
+			if (removedUsersList.find { it.id == user.id } == null) {
+				addedUsersList.add(user)
+				_addedUsers.value = addedUsersList
+			} else {
+				removedUsersList.removeAll { it.id == user.id }
+				_removedUsers.value = removedUsersList
+			}
 		} else {
 			if (addedUsersList.find { it.id == user.id } != null) {
 				addedUsersList.removeAll { it.id == user.id }

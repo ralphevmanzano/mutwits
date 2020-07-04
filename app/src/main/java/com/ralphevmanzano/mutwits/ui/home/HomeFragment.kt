@@ -10,8 +10,10 @@ import com.ralphevmanzano.mutwits.data.models.Resource
 import com.ralphevmanzano.mutwits.data.models.User
 import com.ralphevmanzano.mutwits.databinding.HomeFragmentBinding
 import com.ralphevmanzano.mutwits.util.Prefs
+import com.ralphevmanzano.mutwits.util.extensions.hide
 import com.ralphevmanzano.mutwits.util.extensions.observe
 import com.ralphevmanzano.mutwits.util.extensions.setVisible
+import com.ralphevmanzano.mutwits.util.extensions.show
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -25,7 +27,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
 
-    val adapter = HomeAdapter()
+    private val adapter = HomeAdapter()
 
     override val layoutRes: Int get() = R.layout.home_fragment
     override val viewModelClass: Class<HomeViewModel> get() = HomeViewModel::class.java
@@ -86,7 +88,9 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
                             binding.apply {
                                 val data = result.data
                                 if (data is List<*>) {
-                                    adapter.submitList(data as List<User>)
+                                    val list = data as List<User>
+                                    list.sortedBy { user -> user.userName }
+                                    adapter.submitList(list)
                                     layoutCreateList.setVisible(View.GONE)
                                     rv.setVisible(View.VISIBLE)
                                 }
@@ -102,18 +106,21 @@ class HomeFragment : BaseFragment<HomeViewModel, HomeFragmentBinding>() {
                     when(result) {
                         is Resource.Loading -> {
                             binding.apply {
-                                layoutCreateList.setVisible(View.GONE)
-                                rv.setVisible(View.GONE)
-                                pb.setVisible(View.VISIBLE)
+                                layoutCreateList.hide()
+                                rv.hide()
+                                pb.show()
                             }
                         }
                         is Resource.Success -> {
                             binding.apply {
-                                pb.setVisible(View.GONE)
+                                pb.hide()
+                                rv.show()
                             }
                         }
                         is Resource.Error -> {
                             binding.apply {
+                                layoutCreateList.show()
+                                rv.hide()
                                 pb.setVisible(View.GONE)
                             }
                         }

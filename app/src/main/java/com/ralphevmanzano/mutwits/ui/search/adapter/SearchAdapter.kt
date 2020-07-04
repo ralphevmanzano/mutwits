@@ -1,5 +1,6 @@
 package com.ralphevmanzano.mutwits.ui.search.adapter
 
+import android.content.res.ColorStateList
 import androidx.core.content.ContextCompat
 import com.ralphevmanzano.mutwits.R
 import com.ralphevmanzano.mutwits.data.models.User
@@ -56,24 +57,33 @@ class SearchAdapter @Inject constructor() :
         holder.binding.user = getItem(position)
         holder.binding.executePendingBindings()
 
+        var isSelected = false
+
         if (payloads.isEmpty()) {
+            isSelected = getItem(position).isSelected
             super.onBindViewHolder(holder, position, payloads)
         } else {
-            val isSelected: Boolean = payloads[0] as Boolean
+            isSelected = payloads[0] as Boolean
+        }
 
-            holder.binding.btnAdd.apply {
-                text = if (isSelected) "Remove" else "Add"
-                setTextColor(
-                    ContextCompat.getColor(
-                        this.context,
-                        if (isSelected) R.color.red else R.color.colorPrimary
-                    )
+        holder.binding.btnAdd.apply {
+            text = if (isSelected) "Remove" else "Add"
+            setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    if (isSelected) android.R.color.white else R.color.colorPrimary
                 )
-                strokeColor = ContextCompat.getColorStateList(
-                    this.context,
-                    if (isSelected) R.color.red else R.color.colorPrimary
+            )
+            strokeColor = ContextCompat.getColorStateList(
+                context,
+                if (isSelected) R.color.red else R.color.colorPrimary
+            )
+            setBackgroundColor(
+                ContextCompat.getColor(
+                    context,
+                    if (isSelected) R.color.red else android.R.color.transparent
                 )
-            }
+            )
         }
     }
 }

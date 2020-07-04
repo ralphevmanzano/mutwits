@@ -9,3 +9,11 @@ fun View.setVisible(toVisibility: Int) {
 		visibility = toVisibility
 	}
 }
+
+fun View.show() {
+	if (visibility == View.VISIBLE) return else visibility = View.VISIBLE
+}
+
+fun View.hide() {
+	if (visibility == View.GONE) return else visibility = View.GONE
+}
